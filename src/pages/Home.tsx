@@ -11,21 +11,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+const regions = ["All Regions", "Auckland", "Wellington", "Christchurch", "Hamilton", "Dunedin"];
+
 const Home: React.FC = () => {
   const data = [
-    { route: "A to B", busNumber: 101, departureTime: "06:00 AM", arrivalTime: "07:00 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, A Town", stopAddress: "Stop St, B Town", status: "on time" },
-    { route: "A to C", busNumber: 102, departureTime: "07:30 AM", arrivalTime: "08:45 AM", daysOfOperation: "Mon-Sun", startAddress: "Start St, A Town", stopAddress: "Stop St, C Town", status: "delayed" },
-    { route: "B to D", busNumber: 103, departureTime: "09:00 AM", arrivalTime: "10:30 AM", daysOfOperation: "Sat-Sun", startAddress: "Start St, B Town", stopAddress: "Stop St, D Town", status: "cancelled" },
-    { route: "C to E", busNumber: 104, departureTime: "10:15 AM", arrivalTime: "11:45 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, C Town", stopAddress: "Stop St, E Town", status: "on time" },
-    { route: "D to F", busNumber: 105, departureTime: "12:00 PM", arrivalTime: "01:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, D Town", stopAddress: "Stop St, F Town", status: "delayed" },
-    { route: "E to G", busNumber: 106, departureTime: "02:00 PM", arrivalTime: "03:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, E Town", stopAddress: "Stop St, G Town", status: "on time" },
-    { route: "F to H", busNumber: 107, departureTime: "04:00 PM", arrivalTime: "05:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, F Town", stopAddress: "Stop St, H Town", status: "cancelled" },
-    { route: "G to I", busNumber: 108, departureTime: "06:00 PM", arrivalTime: "07:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, G Town", stopAddress: "Stop St, I Town", status: "on time" },
-    { route: "H to J", busNumber: 109, departureTime: "08:00 PM", arrivalTime: "09:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, H Town", stopAddress: "Stop St, J Town", status: "delayed" },
-    { route: "I to K", busNumber: 110, departureTime: "10:00 PM", arrivalTime: "11:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, I Town", stopAddress: "Stop St, K Town", status: "on time" },
+    { region: "Auckland", route: "A to B", busNumber: 101, departureTime: "06:00 AM", arrivalTime: "07:00 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, A Town", stopAddress: "Stop St, B Town", status: "on time" },
+    { region: "Wellington", route: "A to C", busNumber: 102, departureTime: "07:30 AM", arrivalTime: "08:45 AM", daysOfOperation: "Mon-Sun", startAddress: "Start St, A Town", stopAddress: "Stop St, C Town", status: "delayed" },
+    { region: "Christchurch", route: "B to D", busNumber: 103, departureTime: "09:00 AM", arrivalTime: "10:30 AM", daysOfOperation: "Sat-Sun", startAddress: "Start St, B Town", stopAddress: "Stop St, D Town", status: "cancelled" },
+    { region: "Hamilton", route: "C to E", busNumber: 104, departureTime: "10:15 AM", arrivalTime: "11:45 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, C Town", stopAddress: "Stop St, E Town", status: "on time" },
+    { region: "Dunedin", route: "D to F", busNumber: 105, departureTime: "12:00 PM", arrivalTime: "01:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, D Town", stopAddress: "Stop St, F Town", status: "delayed" },
+    { region: "Auckland", route: "E to G", busNumber: 106, departureTime: "02:00 PM", arrivalTime: "03:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, E Town", stopAddress: "Stop St, G Town", status: "on time" },
+    { region: "Wellington", route: "F to H", busNumber: 107, departureTime: "04:00 PM", arrivalTime: "05:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, F Town", stopAddress: "Stop St, H Town", status: "cancelled" },
+    { region: "Christchurch", route: "G to I", busNumber: 108, departureTime: "06:00 PM", arrivalTime: "07:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, G Town", stopAddress: "Stop St, I Town", status: "on time" },
+    { region: "Hamilton", route: "H to J", busNumber: 109, departureTime: "08:00 PM", arrivalTime: "09:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, H Town", stopAddress: "Stop St, J Town", status: "delayed" },
+    { region: "Dunedin", route: "I to K", busNumber: 110, departureTime: "10:00 PM", arrivalTime: "11:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, I Town", stopAddress: "Stop St, K Town", status: "on time" },
   ];
 
   const [filter, setFilter] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('All Regions');
   const [columnVisibility, setColumnVisibility] = useState({
     route: true,
     busNumber: true,
@@ -35,9 +38,11 @@ const Home: React.FC = () => {
     startAddress: true,
     stopAddress: true,
     status: true,
+    region: true,
   });
 
-  const filteredData = data.filter(item =>
+  const filteredData = data.filter(item => 
+    (selectedRegion === 'All Regions' || item.region === selectedRegion) &&
     item.route.toLowerCase().includes(filter.toLowerCase())
   );
 
@@ -75,6 +80,15 @@ const Home: React.FC = () => {
             onChange={(e) => setFilter(e.target.value)}
             className="max-w-md mr-4 p-2 border border-gray-300 rounded"
           />
+          <select
+            value={selectedRegion}
+            onChange={(e) => setSelectedRegion(e.target.value)}
+            className="max-w-md mr-4 p-2 border border-gray-300 rounded"
+          >
+            {regions.map(region => (
+              <option key={region} value={region}>{region}</option>
+            ))}
+          </select>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto flex items-center">
@@ -107,6 +121,7 @@ const Home: React.FC = () => {
                 {columnVisibility.startAddress && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Address</th>}
                 {columnVisibility.stopAddress && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stop Address</th>}
                 {columnVisibility.status && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>}
+                {columnVisibility.region && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -126,6 +141,7 @@ const Home: React.FC = () => {
                         <span className="ml-2">{row.status}</span>
                       </td>
                     )}
+                    {columnVisibility.region && <td className="px-6 py-4 whitespace-nowrap">{row.region}</td>}
                   </tr>
                 ))
               ) : (
