@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronDown, Filter, MoreHorizontal, Clipboard, Eye, EyeOff, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { ChevronDown, Filter, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -70,22 +67,22 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
-      <h1 className="text-4xl font-bold text-blue-600 mb-8">
+      <h1 className="text-4xl font-bold text-blue-600 mb-8 text-center">
         Bus Timetable v2
       </h1>
       <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg">
-        <div className="flex items-center mb-4">
+        <div className="flex flex-wrap items-center mb-4">
           <input
             type="text"
             placeholder="Filter routes..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="max-w-md mr-4 p-2 border border-gray-300 rounded"
+            className="max-w-full mr-4 p-2 border border-gray-300 rounded mb-2 md:mb-0"
           />
           <select
             value={selectedRegion}
             onChange={(e) => setSelectedRegion(e.target.value)}
-            className="max-w-md mr-4 p-2 border border-gray-300 rounded"
+            className="max-w-full mr-4 p-2 border border-gray-300 rounded mb-2 md:mb-0"
           >
             {regions.map(region => (
               <option key={region} value={region}>{region}</option>
@@ -115,40 +112,40 @@ const Home: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {columnVisibility.route && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>}
-                {columnVisibility.busNumber && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bus Number</th>}
-                {columnVisibility.departureTime && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure Time</th>}
-                {columnVisibility.arrivalTime && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival Time</th>}
-                {columnVisibility.daysOfOperation && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days of Operation</th>}
-                {columnVisibility.startAddress && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Address</th>}
-                {columnVisibility.stopAddress && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stop Address</th>}
-                {columnVisibility.status && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>}
-                {columnVisibility.region && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>}
+                {columnVisibility.route && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>}
+                {columnVisibility.busNumber && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bus Number</th>}
+                {columnVisibility.departureTime && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure Time</th>}
+                {columnVisibility.arrivalTime && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival Time</th>}
+                {columnVisibility.daysOfOperation && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days of Operation</th>}
+                {columnVisibility.startAddress && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Address</th>}
+                {columnVisibility.stopAddress && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stop Address</th>}
+                {columnVisibility.status && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>}
+                {columnVisibility.region && <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData.length ? (
                 filteredData.map((row, index) => (
                   <tr key={index} className="hover:bg-gray-100">
-                    {columnVisibility.route && <td className="px-6 py-4 whitespace-nowrap">{row.route}</td>}
-                    {columnVisibility.busNumber && <td className="px-6 py-4 whitespace-nowrap">{row.busNumber}</td>}
-                    {columnVisibility.departureTime && <td className="px-6 py-4 whitespace-nowrap">{row.departureTime}</td>}
-                    {columnVisibility.arrivalTime && <td className="px-6 py-4 whitespace-nowrap">{row.arrivalTime}</td>}
-                    {columnVisibility.daysOfOperation && <td className="px-6 py-4 whitespace-nowrap">{row.daysOfOperation}</td>}
-                    {columnVisibility.startAddress && <td className="px-6 py-4 whitespace-nowrap">{row.startAddress}</td>}
-                    {columnVisibility.stopAddress && <td className="px-6 py-4 whitespace-nowrap">{row.stopAddress}</td>}
+                    {columnVisibility.route && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.route}</td>}
+                    {columnVisibility.busNumber && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.busNumber}</td>}
+                    {columnVisibility.departureTime && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.departureTime}</td>}
+                    {columnVisibility.arrivalTime && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.arrivalTime}</td>}
+                    {columnVisibility.daysOfOperation && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.daysOfOperation}</td>}
+                    {columnVisibility.startAddress && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.startAddress}</td>}
+                    {columnVisibility.stopAddress && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.stopAddress}</td>}
                     {columnVisibility.status && (
-                      <td className="px-6 py-4 whitespace-nowrap flex items-center">
+                      <td className="px-2 md:px-6 py-4 whitespace-nowrap flex items-center">
                         {getStatusIcon(row.status)}
                         <span className="ml-2">{row.status}</span>
                       </td>
                     )}
-                    {columnVisibility.region && <td className="px-6 py-4 whitespace-nowrap">{row.region}</td>}
+                    {columnVisibility.region && <td className="px-2 md:px-6 py-4 whitespace-nowrap">{row.region}</td>}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={Object.keys(columnVisibility).length} className="px-6 py-4 text-center">No results found.</td>
+                  <td colSpan={Object.keys(columnVisibility).length} className="px-2 md:px-6 py-4 text-center">No results found.</td>
                 </tr>
               )}
             </tbody>
