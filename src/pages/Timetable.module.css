@@ -1,0 +1,52 @@
+.status {
+    text-transform: capitalize;
+    font-weight: bold;
+  }
+  
+  .status.on-time {
+    color: green;
+  }
+  
+  .status.delayed {
+    color: orange;
+  }
+  
+  .status.cancelled {
+    color: red;
+  }
+  
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .table-container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .hover-row:hover {
+    background-color: #f9f9f9;
+    transition: background-color 0.3s;
+  }
+  
+  .pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  .filter-input {
+    max-width: 300px;
+    margin-right: auto;
+  }
+  
