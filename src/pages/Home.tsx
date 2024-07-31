@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const regions = ["All Regions", "Auckland", "Wellington", "Christchurch", "Hamilton", "Dunedin"];
+const regions = ["All Regions", "Auckland", "Wellington", "Christchurch", "Hamilton", "Dunedin", "Queenstown", "Invercargill"];
 
 const Home: React.FC = () => {
   const data = [
@@ -25,6 +25,8 @@ const Home: React.FC = () => {
     { region: "Christchurch", route: "G to I", busNumber: 108, departureTime: "06:00 PM", arrivalTime: "07:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, G Town", stopAddress: "Stop St, I Town", status: "on time" },
     { region: "Hamilton", route: "H to J", busNumber: 109, departureTime: "08:00 PM", arrivalTime: "09:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, H Town", stopAddress: "Stop St, J Town", status: "delayed" },
     { region: "Dunedin", route: "I to K", busNumber: 110, departureTime: "10:00 PM", arrivalTime: "11:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, I Town", stopAddress: "Stop St, K Town", status: "on time" },
+    { region: "Queenstown", route: "J to L", busNumber: 111, departureTime: "11:00 AM", arrivalTime: "12:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, J Town", stopAddress: "Stop St, L Town", status: "on time" },
+    { region: "Invercargill", route: "K to M", busNumber: 112, departureTime: "01:00 PM", arrivalTime: "02:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, K Town", stopAddress: "Stop St, M Town", status: "delayed" },
   ];
 
   const [filter, setFilter] = useState('');
