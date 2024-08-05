@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ChevronDown, Filter, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +42,19 @@ const Home: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://bus-app-api-kl95.onrender.com/region_data_app');
+        console.log(response.data); // Log the fetched data to the console
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredData = data.filter(item => 
     (selectedRegion === 'All Regions' || item.region === selectedRegion) &&

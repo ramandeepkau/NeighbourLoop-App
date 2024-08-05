@@ -3,7 +3,7 @@ import { Stop, BusSchedule } from './types'; // Adjust the import path as necess
 
 export const getStops = async (): Promise<Stop[]> => {
   try {
-    const response = await axiosInstance.get('/stops');
+    const response = await axiosInstance.get('/region_data_app');
     return response.data;
   } catch (error) {
     console.error('Error fetching stops:', error);
