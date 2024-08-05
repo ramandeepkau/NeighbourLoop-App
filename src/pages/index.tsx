@@ -13,6 +13,22 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+const Index = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push('/home');
+  }, [router]);
+
+  return null;
+};
+
+
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -295,3 +311,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
