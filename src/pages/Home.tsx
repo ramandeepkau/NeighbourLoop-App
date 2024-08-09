@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
 const Home: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
@@ -40,80 +41,101 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
-      <h1 className="text-4xl font-bold text-blue-600 mb-8 text-center">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-white p-6">
+      <h1 className="text-5xl font-bold text-blue-700 mb-12 text-center">
         Bus Timetable
       </h1>
       {!selectedRegion && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Regions</h2>
-          {regions.map((region) => (
-            <button
-              key={region}
-              className="m-2 p-4 bg-blue-500 text-white rounded"
-              onClick={() => handleRegionSelect(region)}
-            >
-              {region}
-            </button>
-          ))}
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl text-center">
+          <h2 className="text-3xl font-semibold mb-6 text-gray-800">Select a Region</h2>
+          <div className="flex justify-around">
+            {regions.map((region) => (
+              <button
+                key={region}
+                className="m-2 p-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-all duration-300 ease-in-out"
+                onClick={() => handleRegionSelect(region)}
+              >
+                {region}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {selectedRegion && !selectedRoute && (
-        <div>
-          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
-          <h2 className="text-2xl font-semibold mb-4">Select a Route</h2>
-          {selectedRegion === "Dunedin"
-            ? dunedinRoutes.map((route) => (
-                <button
-                  key={route}
-                  className="m-2 p-4 bg-green-500 text-white rounded"
-                  onClick={() => handleRouteSelect(route)}
-                >
-                  {route}
-                </button>
-              ))
-            : queenstownRoutes.map((route) => (
-                <button
-                  key={route}
-                  className="m-2 p-4 bg-green-500 text-white rounded"
-                  onClick={() => handleRouteSelect(route)}
-                >
-                  {route}
-                </button>
-              ))}
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl text-center">
+          <button 
+            className="flex items-center mb-4 text-gray-500 hover:text-gray-700 transition-all duration-300 ease-in-out"
+            onClick={handleBack}
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" /> Back
+          </button>
+          <h2 className="text-3xl font-semibold mb-6 text-gray-800">Select a Route</h2>
+          <div className="flex justify-around">
+            {selectedRegion === "Dunedin"
+              ? dunedinRoutes.map((route) => (
+                  <button
+                    key={route}
+                    className="m-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-full transition-all duration-300 ease-in-out"
+                    onClick={() => handleRouteSelect(route)}
+                  >
+                    {route}
+                  </button>
+                ))
+              : queenstownRoutes.map((route) => (
+                  <button
+                    key={route}
+                    className="m-2 p-4 bg-green-500 hover:bg-green-600 text-white rounded-full transition-all duration-300 ease-in-out"
+                    onClick={() => handleRouteSelect(route)}
+                  >
+                    {route}
+                  </button>
+                ))}
+          </div>
         </div>
       )}
       {selectedRoute && !selectedStartPoint && (
-        <div>
-          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
-          <h2 className="text-2xl font-semibold mb-4">Select a Starting Point</h2>
-          {dunedinStops[selectedRoute as keyof typeof dunedinStops]?.map(
-            (startPoint) => (
-              <button
-                key={startPoint}
-                className="m-2 p-4 bg-yellow-500 text-white rounded"
-                onClick={() => handleStartPointSelect(startPoint)}
-              >
-                {startPoint}
-              </button>
-            )
-          )}
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl text-center">
+          <button 
+            className="flex items-center mb-4 text-gray-500 hover:text-gray-700 transition-all duration-300 ease-in-out"
+            onClick={handleBack}
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" /> Back
+          </button>
+          <h2 className="text-3xl font-semibold mb-6 text-gray-800">Select a Starting Point</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {dunedinStops[selectedRoute as keyof typeof dunedinStops]?.map(
+              (startPoint) => (
+                <button
+                  key={startPoint}
+                  className="m-2 p-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all duration-300 ease-in-out"
+                  onClick={() => handleStartPointSelect(startPoint)}
+                >
+                  {startPoint}
+                </button>
+              )
+            )}
+          </div>
         </div>
       )}
       {selectedStartPoint && (
-        <div>
-          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
-          <h2 className="text-2xl font-semibold mb-4">Timetable</h2>
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-xl text-center">
+          <button 
+            className="flex items-center mb-4 text-gray-500 hover:text-gray-700 transition-all duration-300 ease-in-out"
+            onClick={handleBack}
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" /> Back
+          </button>
+          <h2 className="text-3xl font-semibold mb-6 text-gray-800">Timetable</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Stop Name
                 </th>
-                <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   Start Time
                 </th>
-                <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   End Point
                 </th>
               </tr>
@@ -122,18 +144,19 @@ const Home: React.FC = () => {
               {dunedinStops[selectedRoute as keyof typeof dunedinStops]?.map(
                 (stop, index) => (
                   <tr key={index}>
-                    <td className="px-2 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {stop}
                     </td>
-                    <td className="px-2 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {`0${index + 6}:00 AM`} {/* Example start time */}
                     </td>
-                    <td className="px-2 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {selectedStartPoint}
                     </td>
                   </tr>
                 )
               )}
+              ))
             </tbody>
           </table>
         </div>
