@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 const timetableData = {
   "Dunedin": [
     {
-      number: 1, 
-      route: "Palmerston - City", 
+      number: 1,
+      route: "Palmerston - City",
       detail: "City - Palmerston",
       stops: [
         { stopName: "Bond Street Terminus", startTime: "7:00 AM", endTime: "11:00 AM", nextService: "4:45 PM" },
@@ -27,6 +27,7 @@ const timetableData = {
         { stopName: "Bus Hub Stop H", startTime: "8:10 AM", endTime: "12:00 PM", nextService: "5:45 PM" },
       ],
     },
+    { number: 1, route: "Palmerston - City", detail: "City - Palmerston" },
     { number: 10, route: "Opoho - City - Shiel Hill", detail: "City - Opoho - Shiel Hill" },
     { number: 11, route: "Shiel Hill - City - Opoho", detail: "City - Shiel Hill - Opoho" },
     { number: 14, route: "Port Chalmers - City", detail: "City - Port Chalmers" },
@@ -49,21 +50,33 @@ const timetableData = {
   ],
   "Queenstown": [
     { number: 37, route: "Concord - City - University", detail: "University - City - Concord" },
-    // Add Queenstown routes similarly if required
   ]
 };
 
 const Home: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
     setSelectedRoute(null);
+    setCurrentPage(2);
   };
 
   const handleRouteSelect = (route: any) => {
     setSelectedRoute(route);
+    setCurrentPage(3);
+  };
+
+  const goBack = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -72,7 +85,7 @@ const Home: React.FC = () => {
         Dunedin Bus Timetable
       </h1>
 
-      {!selectedArea && (
+      {currentPage === 1 && (
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -89,27 +102,32 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {selectedArea && !selectedRoute && (
+      {currentPage === 2 && selectedArea && (
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {timetableData[selectedArea].map((route) => (
               <button
-                key={route.number}
-                className="m-2 p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transform transition-transform duration-300 hover:scale-105"
-                onClick={() => handleRouteSelect(route)}
-              >
-                {route.route}
-              </button>
+              key={route.number}
+              className="m-2 p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transform transition-transform duration-300 hover:scale-105"
+              onClick={() => handleRouteSelect(route)}
+            >
+              {route.route}
+            </button>
             ))}
           </div>
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            onClick={goBack}
+          >
+            Back to Regions
+          </button>
         </div>
       )}
 
-      {selectedRoute && (
+      {currentPage === 3 && selectedRoute && (
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">
-{selectedRoute.route}</h2>
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
           {selectedRoute.stops ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -155,13 +173,13 @@ const Home: React.FC = () => {
           <div className="flex justify-center mt-6">
             <button
               className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-              onClick={() => setSelectedRoute(null)}
+              onClick={goBack}
             >
               Back to Routes
             </button>
             <button
               className="ml-4 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-              onClick={() => setSelectedArea(null)}
+              onClick={() => goToPage(1)}
             >
               Back to Areas
             </button>
