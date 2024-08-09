@@ -29,6 +29,16 @@ const Home: React.FC = () => {
     setSelectedStartPoint(startPoint);
   };
 
+  const handleBack = () => {
+    if (selectedStartPoint) {
+      setSelectedStartPoint(null);
+    } else if (selectedRoute) {
+      setSelectedRoute(null);
+    } else if (selectedRegion) {
+      setSelectedRegion(null);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
       <h1 className="text-4xl font-bold text-blue-600 mb-8 text-center">
@@ -50,6 +60,7 @@ const Home: React.FC = () => {
       )}
       {selectedRegion && !selectedRoute && (
         <div>
+          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
           <h2 className="text-2xl font-semibold mb-4">Select a Route</h2>
           {selectedRegion === "Dunedin"
             ? dunedinRoutes.map((route) => (
@@ -74,6 +85,7 @@ const Home: React.FC = () => {
       )}
       {selectedRoute && !selectedStartPoint && (
         <div>
+          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
           <h2 className="text-2xl font-semibold mb-4">Select a Starting Point</h2>
           {dunedinStops[selectedRoute as keyof typeof dunedinStops]?.map(
             (startPoint) => (
@@ -90,6 +102,7 @@ const Home: React.FC = () => {
       )}
       {selectedStartPoint && (
         <div>
+          <button className="m-2 p-2 bg-gray-400 text-white rounded" onClick={handleBack}>Back</button>
           <h2 className="text-2xl font-semibold mb-4">Timetable</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
