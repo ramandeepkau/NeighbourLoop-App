@@ -44,59 +44,81 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
-      <h1 className="text-4xl font-bold text-blue-600 mb-8 text-center">Bus Timetable</h1>
-      
+      <h1 className="text-5xl font-extrabold text-blue-700 mb-10 text-center">
+        Dunedin Bus Timetable
+      </h1>
+
       {!selectedArea && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Select an Area</h2>
-          {Object.keys(timetableData).map((area) => (
-            <button
-              key={area}
-              className="m-2 p-4 bg-blue-500 text-white rounded"
-              onClick={() => handleAreaSelect(area)}
-            >
-              {area}
-            </button>
-          ))}
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {Object.keys(timetableData).map((area) => (
+              <button
+                key={area}
+                className="m-2 p-4 bg-gradient-to-r from-teal-500 to-green-500 text-white font-bold rounded-lg shadow-lg hover:from-teal-600 hover:to-green-600 transform transition-transform duration-300 hover:scale-105"
+                onClick={() => handleAreaSelect(area)}
+              >
+                {area}
+              </button>
+            ))}
+          </div>
         </div>
       )}
-      
+
       {selectedArea && !selectedRoute && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Select a Route</h2>
-          {timetableData[selectedArea].map((route) => (
-            <button
-              key={route.number}
-              className="m-2 p-4 bg-green-500 text-white rounded"
-              onClick={() => handleRouteSelect(route)}
-            >
-              {route.route}
-            </button>
-          ))}
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {timetableData[selectedArea].map((route) => (
+              <button
+                key={route.number}
+                className="m-2 p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transform transition-transform duration-300 hover:scale-105"
+                onClick={() => handleRouteSelect(route)}
+              >
+                {route.route}
+              </button>
+            ))}
+          </div>
         </div>
       )}
-      
+
       {selectedRoute && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Timetable</h2>
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
                   Route
                 </th>
-                <th className="px-2 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
                   Details
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr>
-                <td className="px-2 md:px-6 py-4 whitespace-nowrap">{selectedRoute.route}</td>
-                <td className="px-2 md:px-6 py-4 whitespace-nowrap">{selectedRoute.detail}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">
+                  {selectedRoute.route}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                  {selectedRoute.detail}
+                </td>
               </tr>
             </tbody>
           </table>
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            onClick={() => setSelectedRoute(null)}
+          >
+            Back to Routes
+          </button>
+          <button
+            className="mt-6 ml-4 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            onClick={() => setSelectedArea(null)}
+          >
+            Back to Areas
+          </button>
         </div>
       )}
     </div>
