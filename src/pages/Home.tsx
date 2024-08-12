@@ -94,7 +94,7 @@ const Home: React.FC = () => {
               key={area}
               className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
               onClick={() => handleAreaSelect(area)}
-              style={{ backgroundColor: '#FFD700', color: 'black' }} // Subtle yellow color with bold black text
+              style={{ backgroundColor: '#FFFACD', color: 'black' }} // Subtle yellow color with bold black text
             >
               {area}
             </button>            
@@ -112,7 +112,7 @@ const Home: React.FC = () => {
              key={route.number}
              className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
              onClick={() => handleRouteSelect(route)}
-             style={{ backgroundColor: '#FFD700', color: 'black' }} // Subtle yellow color with bold black text
+             style={{ backgroundColor: '#FFFACD', color: 'black' }} // Subtle yellow color with bold black text
            >
              {route.route}
            </button>           
