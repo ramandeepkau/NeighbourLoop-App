@@ -27,7 +27,7 @@ const timetableData = {
         { stopName: "Bus Hub Stop H", startTime: "8:10 AM", endTime: "12:00 PM", nextService: "5:45 PM" },
       ],
     },
-    { number: 1, route: "Palmerston - City", detail: "City - Palmerston" },
+    //{ number: 1, route: "Palmerston - City", detail: "City - Palmerston" },
     { number: 10, route: "Opoho - City - Shiel Hill", detail: "City - Opoho - Shiel Hill" },
     { number: 11, route: "Shiel Hill - City - Opoho", detail: "City - Shiel Hill - Opoho" },
     { number: 14, route: "Port Chalmers - City", detail: "City - Port Chalmers" },
@@ -91,12 +91,13 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {Object.keys(timetableData).map((area) => (
               <button
-                key={area}
-                className="m-2 p-4 bg-gradient-to-r from-teal-500 to-green-500 text-white font-bold rounded-lg shadow-lg hover:from-teal-600 hover:to-green-600 transform transition-transform duration-300 hover:scale-105"
-                onClick={() => handleAreaSelect(area)}
-              >
-                {area}
-              </button>
+              key={area}
+              className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+              onClick={() => handleAreaSelect(area)}
+              style={{ backgroundColor: '#FFD700', color: 'black' }} // Subtle yellow color with bold black text
+            >
+              {area}
+            </button>            
             ))}
           </div>
         </div>
@@ -107,13 +108,14 @@ const Home: React.FC = () => {
           <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {timetableData[selectedArea].map((route) => (
-              <button
-              key={route.number}
-              className="m-2 p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-600 transform transition-transform duration-300 hover:scale-105"
-              onClick={() => handleRouteSelect(route)}
-            >
-              {route.route}
-            </button>
+             <button
+             key={route.number}
+             className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+             onClick={() => handleRouteSelect(route)}
+             style={{ backgroundColor: '#FFD700', color: 'black' }} // Subtle yellow color with bold black text
+           >
+             {route.route}
+           </button>           
             ))}
           </div>
           <button
