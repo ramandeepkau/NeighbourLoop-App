@@ -58,6 +58,8 @@ const Home: React.FC = () => {
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  
+
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
     setSelectedRoute(null);
