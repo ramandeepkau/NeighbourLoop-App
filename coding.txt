@@ -127,9 +127,9 @@ const Home: React.FC = () => {
         </div>
       )}
 
-{currentPage === 3 && selectedRoute && (
-  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
+      {currentPage === 3 && selectedRoute && (
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
           {selectedRoute.stops ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
