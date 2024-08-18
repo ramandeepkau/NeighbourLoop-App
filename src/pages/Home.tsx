@@ -8,7 +8,7 @@ const Home: React.FC = () => {
 
   const fetchTimetableData = async (region: string) => {
     try {
-      const response = await fetch(`https://bus-app-api-kl95.onrender.com/region_data_app?region=${region}`);
+      const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
       const data = await response.json();
       console.log("API Data:", data); // Log the data to see the structure
       setTimetableData(data);
@@ -16,7 +16,6 @@ const Home: React.FC = () => {
       console.error("Error fetching timetable data:", error);
     }
   };
-  
 
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
@@ -71,38 +70,37 @@ const Home: React.FC = () => {
         </div>
       )}
 
-{currentPage === 2 && selectedArea && (
-  <div className="text-center">
-    <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
-    {timetableData[selectedArea] ? (
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {timetableData[selectedArea].map((route: any) => (
+      {currentPage === 2 && selectedArea && (
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
+          {timetableData.routes ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {timetableData.routes.map((route: any) => (
+                <button
+                  key={route.route_id}
+                  className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                  onClick={() => handleRouteSelect(route)}
+                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                >
+                  {route.route_name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p>No routes available for this region.</p>
+          )}
           <button
-            key={route.number}
-            className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-            onClick={() => handleRouteSelect(route)}
-            style={{ backgroundColor: '#FFFACD', color: 'black' }}
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            onClick={goBack}
           >
-            {route.route}
+            Back to Regions
           </button>
-        ))}
-      </div>
-    ) : (
-      <p>No routes available for this region.</p>
-    )}
-    <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-    >
-      Back to Regions
-    </button>
-  </div>
-)}
-
+        </div>
+      )}
 
       {currentPage === 3 && selectedRoute && (
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route_name}</h2>
           {selectedRoute.stops ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -122,19 +120,19 @@ const Home: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {selectedRoute.stops.map((stop, index) => (
+                {selectedRoute.stops.map((stop: any, index: number) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">
-                      {stop.stopName}
+                      {stop.stop_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.startTime}
+                      {stop.start_time}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.endTime}
+                      {stop.end_time}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.nextService}
+                      {stop.next_service_time}
                     </td>
                   </tr>
                 ))}
