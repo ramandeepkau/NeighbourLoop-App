@@ -11,7 +11,7 @@ const Home: React.FC = () => {
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
       const data = await response.json();
       console.log("API Data:", data); // Log the data to see the structure
-      setTimetableData(data);
+      setTimetableData({ [region]: data.routes });
     } catch (error) {
       console.error("Error fetching timetable data:", error);
     }
@@ -49,11 +49,10 @@ const Home: React.FC = () => {
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Assuming "Dunedin" and "Queenstown" are the two regions */}
             <button
               key="Dunedin"
               className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-              onClick={() => handleAreaSelect("Dunedin")}
+              onClick={() => handleAreaSelect("DUN")}
               style={{ backgroundColor: '#FFFACD', color: 'black' }}
             >
               Dunedin
@@ -61,7 +60,7 @@ const Home: React.FC = () => {
             <button
               key="Queenstown"
               className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-              onClick={() => handleAreaSelect("Queenstown")}
+              onClick={() => handleAreaSelect("QUEENSTOWN")}
               style={{ backgroundColor: '#FFFACD', color: 'black' }}
             >
               Queenstown
@@ -73,16 +72,16 @@ const Home: React.FC = () => {
       {currentPage === 2 && selectedArea && (
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
-          {timetableData.routes ? (
+          {timetableData[selectedArea] && timetableData[selectedArea].length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {timetableData.routes.map((route: any) => (
+              {timetableData[selectedArea].map((route: any) => (
                 <button
-                  key={route.route_id}
+                  key={route.title}
                   className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                   onClick={() => handleRouteSelect(route)}
                   style={{ backgroundColor: '#FFFACD', color: 'black' }}
                 >
-                  {route.route_name}
+                  {route.title}
                 </button>
               ))}
             </div>
@@ -100,8 +99,8 @@ const Home: React.FC = () => {
 
       {currentPage === 3 && selectedRoute && (
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route_name}</h2>
-          {selectedRoute.stops ? (
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.title}</h2>
+          {selectedRoute.locations ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -120,22 +119,21 @@ const Home: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {selectedRoute.stops.map((stop: any, index: number) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">
-                      {stop.stop_name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.start_time}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.end_time}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                      {stop.next_service_time}
-                    </td>
-                  </tr>
-                ))}
+                {/* Assuming locations contain the details */}
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">
+                    {selectedRoute.locations}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {/* Placeholder for start time */}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {/* Placeholder for end time */}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {/* Placeholder for next service */}
+                  </td>
+                </tr>
               </tbody>
             </table>
           ) : (
