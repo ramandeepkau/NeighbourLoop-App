@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+import React, { useState, useEffect } from 'react';
+
 
 const timetableData = {
   "Dunedin": [
@@ -53,6 +55,8 @@ const timetableData = {
   ]
 };
 
+const Map = dynamic(() => import('./MapComponent'), { ssr: false });
+
 const Home: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
@@ -89,15 +93,15 @@ const Home: React.FC = () => {
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {Object.keys(timetableData).map((area) => (
+            {["Dunedin", "Queenstown"].map((area) => (
               <button
-              key={area}
-              className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-              onClick={() => handleAreaSelect(area)}
-              style={{ backgroundColor: '#FFFACD', color: 'black' }} // Softer, pastel yellow with bold black text
-            >
-              {area}
-            </button>            
+                key={area}
+                className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                onClick={() => handleAreaSelect(area)}
+                style={{ backgroundColor: '#FFFACD', color: 'black' }} // Softer, pastel yellow with bold black text
+              >
+                {area}
+              </button>
             ))}
           </div>
         </div>
@@ -107,15 +111,15 @@ const Home: React.FC = () => {
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {timetableData[selectedArea].map((route) => (
+            {timetableData[selectedArea]?.map((route) => (
               <button
-              key={route.number}
-              className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-              onClick={() => handleRouteSelect(route)}
-              style={{ backgroundColor: '#FFFACD', color: 'black' }} // Softer, pastel yellow with bold black text
-            >
-              {route.route}
-            </button>            
+                key={route.number}
+                className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                onClick={() => handleRouteSelect(route)}
+                style={{ backgroundColor: '#FFFACD', color: 'black' }} // Softer, pastel yellow with bold black text
+              >
+                {route.route}
+              </button>
             ))}
           </div>
           <button
@@ -127,9 +131,9 @@ const Home: React.FC = () => {
         </div>
       )}
 
-{currentPage === 3 && selectedRoute && (
-  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
+      {currentPage === 3 && selectedRoute && (
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Timetable for {selectedRoute.route}</h2>
           {selectedRoute.stops ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -186,6 +190,15 @@ const Home: React.FC = () => {
               Back to Areas
             </button>
           </div>
+
+          {/* Map Placeholder */}
+          <div className="mt-10 bg-yellow-100 text-gray-800 p-4 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-center mb-4">Map of {selectedRoute.route}</h3>
+            <div className="flex justify-center items-center h-64 bg-gray-300 rounded-md">
+              <p className="text-gray-600">Map will be displayed here once available.</p>
+            </div>
+          </div>
+
         </div>
       )}
     </div>
