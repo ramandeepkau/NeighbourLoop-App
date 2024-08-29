@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { ChevronDown, Filter, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { getRegions } from '../apiService'; // Correct import path
 
 interface BusData {
   region: string;
@@ -48,14 +48,14 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching data from API...');
-        const fetchedRegions = await getRegions();
-        console.log('Fetched regions:', fetchedRegions);
+        const response = await axios.get('https://bus-app-api-kl95.onrender.com/region_data_app');
+        console.log(response.data); // Log the fetched data to the console
 
-        if (Array.isArray(fetchedRegions)) {
-          setRegions(fetchedRegions);
+        // Assuming response.data contains the regions data
+        if (Array.isArray(response.data)) {
+          setRegions(response.data);
         } else {
-          console.error('Fetched data is not an array:', fetchedRegions);
+          console.error('Fetched data is not an array:', response.data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -65,14 +65,7 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  const dummyData: BusData[] = [
-    { region: "Dunedin", route: "A to B", busNumber: 101, departureTime: "06:00 AM", arrivalTime: "07:00 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, A Town", stopAddress: "Stop St, B Town", status: "on time" },
-    { region: "Dunedin", route: "C to D", busNumber: 102, departureTime: "08:00 AM", arrivalTime: "09:00 AM", daysOfOperation: "Sat-Sun", startAddress: "Start St, C Town", stopAddress: "Stop St, D Town", status: "delayed" },
-    { region: "Queenstown", route: "E to F", busNumber: 103, departureTime: "10:00 AM", arrivalTime: "11:00 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, E Town", stopAddress: "Stop St, F Town", status: "cancelled" },
-    { region: "Queenstown", route: "G to H", busNumber: 104, departureTime: "12:00 PM", arrivalTime: "01:00 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, G Town", stopAddress: "Stop St, H Town", status: "on time" },
-  ];
-
-  const filteredData = dummyData.filter(item => 
+  const filteredData = data.filter(item => 
     (selectedRegion === 'All Regions' || item.region === selectedRegion) &&
     item.route.toLowerCase().includes(filter.toLowerCase())
   );
@@ -205,7 +198,7 @@ const Home: React.FC = () => {
         </div>
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
-            {filteredData.length} of {dummyData.length} row(s) selected.
+            {filteredData.length} of {data.length} row(s) selected.
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1}>
