@@ -9,24 +9,26 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const regions = ["All Regions", "Auckland", "Wellington", "Christchurch", "Hamilton", "Dunedin", "Queenstown", "Invercargill"];
+interface BusData {
+  region: string;
+  route: string;
+  busNumber: number;
+  departureTime: string;
+  arrivalTime: string;
+  daysOfOperation: string;
+  startAddress: string;
+  stopAddress: string;
+  status: string;
+}
+
+interface RegionData {
+  id: string;
+  region_name: string;
+}
 
 const Home: React.FC = () => {
-  const data = [
-    { region: "Auckland", route: "A to B", busNumber: 101, departureTime: "06:00 AM", arrivalTime: "07:00 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, A Town", stopAddress: "Stop St, B Town", status: "on time" },
-    { region: "Wellington", route: "A to C", busNumber: 102, departureTime: "07:30 AM", arrivalTime: "08:45 AM", daysOfOperation: "Mon-Sun", startAddress: "Start St, A Town", stopAddress: "Stop St, C Town", status: "delayed" },
-    { region: "Christchurch", route: "B to D", busNumber: 103, departureTime: "09:00 AM", arrivalTime: "10:30 AM", daysOfOperation: "Sat-Sun", startAddress: "Start St, B Town", stopAddress: "Stop St, D Town", status: "cancelled" },
-    { region: "Hamilton", route: "C to E", busNumber: 104, departureTime: "10:15 AM", arrivalTime: "11:45 AM", daysOfOperation: "Mon-Fri", startAddress: "Start St, C Town", stopAddress: "Stop St, E Town", status: "on time" },
-    { region: "Dunedin", route: "D to F", busNumber: 105, departureTime: "12:00 PM", arrivalTime: "01:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, D Town", stopAddress: "Stop St, F Town", status: "delayed" },
-    { region: "Auckland", route: "E to G", busNumber: 106, departureTime: "02:00 PM", arrivalTime: "03:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, E Town", stopAddress: "Stop St, G Town", status: "on time" },
-    { region: "Wellington", route: "F to H", busNumber: 107, departureTime: "04:00 PM", arrivalTime: "05:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, F Town", stopAddress: "Stop St, H Town", status: "cancelled" },
-    { region: "Christchurch", route: "G to I", busNumber: 108, departureTime: "06:00 PM", arrivalTime: "07:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, G Town", stopAddress: "Stop St, I Town", status: "on time" },
-    { region: "Hamilton", route: "H to J", busNumber: 109, departureTime: "08:00 PM", arrivalTime: "09:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, H Town", stopAddress: "Stop St, J Town", status: "delayed" },
-    { region: "Dunedin", route: "I to K", busNumber: 110, departureTime: "10:00 PM", arrivalTime: "11:30 PM", daysOfOperation: "Sat-Sun", startAddress: "Start St, I Town", stopAddress: "Stop St, K Town", status: "on time" },
-    { region: "Queenstown", route: "J to L", busNumber: 111, departureTime: "11:00 AM", arrivalTime: "12:30 PM", daysOfOperation: "Mon-Fri", startAddress: "Start St, J Town", stopAddress: "Stop St, L Town", status: "on time" },
-    { region: "Invercargill", route: "K to M", busNumber: 112, departureTime: "01:00 PM", arrivalTime: "02:30 PM", daysOfOperation: "Mon-Sun", startAddress: "Start St, K Town", stopAddress: "Stop St, M Town", status: "delayed" },
-  ];
-
+  const [data, setData] = useState<BusData[]>([]);
+  const [regions, setRegions] = useState<RegionData[]>([]);
   const [filter, setFilter] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All Regions');
   const [columnVisibility, setColumnVisibility] = useState({
@@ -48,6 +50,13 @@ const Home: React.FC = () => {
       try {
         const response = await axios.get('https://bus-app-api-kl95.onrender.com/region_data_app');
         console.log(response.data); // Log the fetched data to the console
+
+        // Assuming response.data contains the regions data
+        if (Array.isArray(response.data)) {
+          setRegions(response.data);
+        } else {
+          console.error('Fetched data is not an array:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -80,7 +89,7 @@ const Home: React.FC = () => {
     currentPage * rowsPerPage
   );
 
-  const toggleColumnVisibility = (column: string) => {
+  const toggleColumnVisibility = (column: keyof typeof columnVisibility) => {
     setColumnVisibility(prevState => ({
       ...prevState,
       [column]: !prevState[column],
@@ -119,8 +128,9 @@ const Home: React.FC = () => {
             onChange={(e) => setSelectedRegion(e.target.value)}
             className="max-w-full mr-4 p-2 border border-gray-300 rounded mb-2 md:mb-0"
           >
-            {regions.map(region => (
-              <option key={region} value={region}>{region}</option>
+            <option value="All Regions">All Regions</option>
+            {regions.map((region) => (
+              <option key={region.id} value={region.region_name}>{region.region_name}</option>
             ))}
           </select>
           <DropdownMenu>
@@ -134,8 +144,8 @@ const Home: React.FC = () => {
                 <DropdownMenuCheckboxItem
                   key={column}
                   className="capitalize"
-                  checked={columnVisibility[column]}
-                  onCheckedChange={() => toggleColumnVisibility(column)}
+                  checked={columnVisibility[column as keyof typeof columnVisibility]}
+                  onCheckedChange={() => toggleColumnVisibility(column as keyof typeof columnVisibility)}
                 >
                   {column}
                 </DropdownMenuCheckboxItem>
