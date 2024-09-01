@@ -42,7 +42,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
       <h1 className="text-5xl font-extrabold text-blue-700 mb-10 text-center">
-        Dunedin Bus Timetable
+        Bus Timetable
       </h1>
 
       {currentPage === 1 && (
