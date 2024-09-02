@@ -4,11 +4,13 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapComponent from '../components/MapComponent';
 import MapTimetable from '../components/MapTimetable';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
+mapboxgl.accessToken = 'your_mapbox_access_token';
 
 interface Route {
   title: string;
-  // Add other properties if there are more in your route object
+  id: string;
+  locations: string;
+  services: Array<{ code: string; direction: string }>;
 }
 
 const Map: React.FC = () => {
@@ -18,8 +20,8 @@ const Map: React.FC = () => {
   const [zoom, setZoom] = useState(15); // Default zoom level
   const [userLocation, setUserLocation] = useState<{ lng: number; lat: number } | null>(null);
   const [routes, setRoutes] = useState<Route[]>([]); // State to store the routes
+  const [selectedServices, setSelectedServices] = useState<Array<{ code: string; direction: string }> | null>(null); // State to store the selected route's services
 
-  // Fetch timetable data for the DUN region when the component mounts
   useEffect(() => {
     const fetchTimetableData = async () => {
       const region = 'DUN'; // Region "DUN"
@@ -44,7 +46,17 @@ const Map: React.FC = () => {
     fetchTimetableData(); // Fetch data for the specified region
   }, []);
 
-  // Initialize the map
+  const handleSelectRegion = async (regionTitle: string, services: Array<{ code: string; direction: string }>) => {
+    setSelectedServices(services);
+    try {
+      const response = await fetch(`https://bus-app-api-kl95.onrender.com/regions/${regionTitle}`);
+      const regionData = await response.json();
+      console.log(`Data for region title ${regionTitle}:`, regionData);
+    } catch (error) {
+      console.error(`Error fetching data for region title ${regionTitle}:`, error);
+    }
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -98,9 +110,8 @@ const Map: React.FC = () => {
     <div className="relative h-screen w-screen">
       <div ref={mapContainer} className="absolute top-0 left-0 w-full h-full z-0" />
       <div className="absolute top-4 left-4 z-10 py-4 px-4">
-        {/* Pass the fetched routes to MapComponent */}
-        <MapComponent routes={routes} />
-        <MapTimetable />
+        <MapComponent routes={routes} onSelectRegion={handleSelectRegion} />
+        <MapTimetable services={selectedServices} />
       </div>
     </div>
   );

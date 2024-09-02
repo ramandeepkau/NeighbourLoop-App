@@ -4,15 +4,16 @@ import { ChevronLeft, Navigation, MapPin, ChevronDown } from 'lucide-react';
 interface Route {
   title: string;
   locations: string;
-  // Add other properties if needed
+  services: Array<{ code: string; direction: string }>;
 }
 
 interface MapComponentProps {
   currentLocation?: string;
   routes: Route[];
+  onSelectRegion: (regionTitle: string, services: Array<{ code: string; direction: string }>) => void;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes, onSelectRegion }) => {
   const [showDropdown1, setShowDropdown1] = useState(false);
   const [showDropdown2, setShowDropdown2] = useState(false);
   const [streetName, setStreetName] = useState<string>('Stuart Street, Dunedin, NZ');
@@ -42,9 +43,10 @@ const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes }) 
     setShowDropdown1(false);
   };
 
-  const selectRoute = (route: string) => {
-    setSelectedRoute(route);
+  const selectRoute = (route: Route) => {
+    setSelectedRoute(route.locations);
     setShowDropdown2(false);
+    onSelectRegion(route.title, route.services); // Pass the selected region title and services to the parent component
   };
 
   return (
@@ -56,7 +58,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes }) 
       <p className="text-gray-600 font-medium pb-6 text-sm px-10">Welcome to the map!</p>
 
       <div className="mt-4">
-        {/* First Dropdown: Select Location */}
         <div
           className="flex items-center justify-between p-2 bg-white shadow-inner text-gray-600 font-semibold text-sm rounded-md cursor-pointer mb-2"
           onClick={toggleDropdown1}
@@ -84,7 +85,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes }) 
           </div>
         )}
 
-        {/* Second Dropdown: Select Route */}
         <div
           className="flex items-center justify-between p-2 bg-white shadow-inner text-gray-600 font-semibold text-sm rounded-md cursor-pointer"
           onClick={toggleDropdown2}
@@ -102,7 +102,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ currentLocation, routes }) 
                 <div
                   key={route.title}
                   className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => selectRoute(route.locations)}
+                  onClick={() => selectRoute(route)}
                 >
                   {route.locations}
                 </div>
