@@ -14,7 +14,7 @@ const MapTimetable: React.FC<MapTimetableProps> = ({ services }) => {
   return (
     <div className="bg-white bg-opacity-80 text-black p-4 rounded-3xl shadow-lg">
       <div className="flex items-center py-2 px-4">
-        <h1 className="text-lg font-bold text-gray-800">Stops</h1>
+        <h1 className="text-lg font-bold text-gray-800">Services</h1>
       </div>
       <p className="text-gray-600 font-medium pb-6 text-sm px-4">Here are the stops for your route</p>
 

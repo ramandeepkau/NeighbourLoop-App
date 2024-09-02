@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapComponent from '../components/MapComponent';
 import MapTimetable from '../components/MapTimetable';
 
-mapboxgl.accessToken = 'your_mapbox_access_token';
+mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
 
 interface Route {
   title: string;
@@ -111,7 +111,9 @@ const Map: React.FC = () => {
       <div ref={mapContainer} className="absolute top-0 left-0 w-full h-full z-0" />
       <div className="absolute top-4 left-4 z-10 py-4 px-4">
         <MapComponent routes={routes} onSelectRegion={handleSelectRegion} />
-        <MapTimetable services={selectedServices} />
+        {selectedServices && selectedServices.length > 0 && (
+          <MapTimetable services={selectedServices} />
+        )}
       </div>
     </div>
   );
