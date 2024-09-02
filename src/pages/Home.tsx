@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 const Home: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
-  const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [timetableData, setTimetableData] = useState<any>({});
 
   const fetchTimetableData = async (region: string) => {
     try {
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
       {currentPage === 3 && selectedRoute && (
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
           <h2 className="text-3xl font-semibold mb-6 text-center">Services for Route {selectedRoute.title}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {selectedRoute.services && selectedRoute.services.length > 0 ? (
               selectedRoute.services.map((service: any) => (
                 <div
