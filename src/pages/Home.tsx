@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 const Home: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
   const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -30,7 +31,8 @@ const Home: React.FC = () => {
   };
 
   const handleServiceSelect = (service: any) => {
-    console.log('Service selected:', service);
+    setSelectedService(service);
+    setCurrentPage(4);
   };
 
   const goBack = () => {
@@ -39,9 +41,11 @@ const Home: React.FC = () => {
     }
   };
 
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-  };
+  const sampleStops = [
+    { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
+    { stop_name: "Middleton Rd, 240", times: ["6:33 PM", "7:03 PM", "7:33 PM"], next_service: "10:33 PM" },
+    { stop_name: "Corstorphine Rd, 136", times: ["6:35 PM", "7:05 PM", "7:35 PM"], next_service: "10:35 PM" },
+  ];
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
@@ -123,6 +127,48 @@ const Home: React.FC = () => {
             onClick={goBack}
           >
             Back to Routes
+          </button>
+        </div>
+      )}
+
+      {currentPage === 4 && selectedService && (
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-gray-600">Select date:</div>
+            <input
+              type="date"
+              className="border rounded p-2"
+              defaultValue={new Date().toISOString().substr(0, 10)}
+            />
+          </div>
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">All stops</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">6:32 PM</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:02 PM</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:32 PM</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Service</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sampleStops.map((stop, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
+                  {stop.times.map((time, timeIndex) => (
+                    <td key={timeIndex} className="px-6 py-4 text-sm text-gray-700">{time}</td>
+                  ))}
+                  <td className="px-6 py-4 text-sm text-gray-700">{stop.next_service}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            onClick={goBack}
+          >
+            Back to Services
           </button>
         </div>
       )}
