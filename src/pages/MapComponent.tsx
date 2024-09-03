@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapComponent from '../components/MapComponent';
 import MapTimetable from '../components/MapTimetable';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoicmFtYW4xMiIsImEiOiJjbTBsdnpuMzQwOXduMm9wdjE3MjQxemZvIn0.vQgFEiCrNT_SD5yJVyImsQ';
+mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
 
 interface Route {
   title: string;
@@ -102,6 +102,7 @@ const Map: React.FC = () => {
     }
   }, [userLocation]);
 
+  
   return (
     <div className="relative h-screen w-screen">
       <div ref={mapContainer} className="absolute top-0 left-0 w-full h-full z-0" />
