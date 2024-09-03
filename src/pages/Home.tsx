@@ -141,6 +141,12 @@ const Home: React.FC = () => {
               className="border rounded p-2"
               defaultValue={new Date().toISOString().substr(0, 10)}
             />
+            <button
+              className="ml-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-teal-600 transform transition-transform duration-300 hover:scale-105"
+              onClick={() => alert("Map button clicked")}
+            >
+              Map
+            </button>
           </div>
           <table className="min-w-full table-auto">
             <thead className="bg-gray-50">
