@@ -1,10 +1,11 @@
+// /components/MapComponent.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapComponent from '../components/MapComponent';
 import MapTimetable from '../components/MapTimetable';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
+mapboxgl.accessToken = 'pk.eyJ1IjoicmFtYW4xMiIsImEiOiJjbTBsdnpuMzQwOXduMm9wdjE3MjQxemZvIn0.vQgFEiCrNT_SD5yJVyImsQ';
 
 interface Route {
   title: string;
@@ -26,16 +27,12 @@ const Map: React.FC = () => {
     const fetchTimetableData = async () => {
       const region = 'DUN'; // Region "DUN"
       try {
-        console.log(`Fetching timetable data for region: ${region}`);
         const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
-        console.log(`Response status: ${response.status}`);
         const data = await response.json();
-        console.log("API Data:", data);
 
         if (data && data.routes) {
           setRoutes(data.routes);
         } else {
-          console.warn("No routes found in the response data");
           setRoutes([]);
         }
       } catch (error) {
@@ -98,7 +95,6 @@ const Map: React.FC = () => {
       });
 
       map.on('zoomend', () => {
-        console.log('Zoom level:', map.getZoom());
         setZoom(map.getZoom());
       });
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';  // Import useRouter from next/router
 
 const Home: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
@@ -7,11 +8,12 @@ const Home: React.FC = () => {
   const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const router = useRouter();  // Initialize useRouter
+
   const fetchTimetableData = async (region: string) => {
     try {
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
       const data = await response.json();
-      console.log("API Data:", data);
       setTimetableData({ [region]: data.routes });
     } catch (error) {
       console.error("Error fetching timetable data:", error);
@@ -40,6 +42,11 @@ const Home: React.FC = () => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const goToMap = () => {
+    router.push('/map');  // Navigate to the Map component
+  };
+  
 
   const sampleStops = [
     { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
@@ -143,7 +150,10 @@ const Home: React.FC = () => {
                 defaultValue={new Date().toISOString().substr(0, 10)}
               />
             </div>
-            <button className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <button 
+              className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+              onClick={goToMap}  // Trigger navigation on click
+            >
               Map
             </button>
           </div>
