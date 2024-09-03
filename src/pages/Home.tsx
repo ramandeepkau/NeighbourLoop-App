@@ -135,16 +135,15 @@ const Home: React.FC = () => {
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
           <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
           <div className="flex justify-between items-center mb-4">
-            <div className="text-gray-600">Select date:</div>
-            <input
-              type="date"
-              className="border rounded p-2"
-              defaultValue={new Date().toISOString().substr(0, 10)}
-            />
-            <button
-              className="ml-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-teal-600 transform transition-transform duration-300 hover:scale-105"
-              onClick={() => alert("Map button clicked")}
-            >
+            <div className="flex items-center">
+              <div className="text-gray-600 mr-2">Select date:</div>
+              <input
+                type="date"
+                className="border rounded p-2"
+                defaultValue={new Date().toISOString().substr(0, 10)}
+              />
+            </div>
+            <button className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
               Map
             </button>
           </div>
