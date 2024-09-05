@@ -44,7 +44,7 @@ const Home: React.FC = () => {
   };
 
   const goToMap = () => {
-    router.push('/map');  // Navigate to the Map component
+    router.push('/MapComponent');  // Navigate to the Map component
   };
   
 
