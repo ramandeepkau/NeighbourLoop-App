@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Navigation, MapPin, ChevronDown } from 'lucide-react';
+
 import 'mapbox-gl/dist/mapbox-gl.css';
+
 
 
 interface Route {
