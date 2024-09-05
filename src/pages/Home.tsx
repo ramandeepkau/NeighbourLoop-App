@@ -6,6 +6,7 @@ const Home: React.FC = () => {
   const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+
   const fetchTimetableData = async (region: string) => {
     try {
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
@@ -37,12 +38,62 @@ const Home: React.FC = () => {
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
+
+
+  const fetchTimetableData = async (region: string) => {
+    try {
+      console.log(`Fetching timetable data for region: ${region}`);
+      const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
+
+      // Log the status and the response object
+      console.log(`Response status: ${response.status}`);
+      const data = await response.json();
+
+      // Log the data received from the API
+      console.log("API Data:", data);
+
+      if (data && data.routes) {
+        setTimetableData({ [region]: data.routes });
+      } else {
+        console.warn("No routes found in the response data");
+        setTimetableData({ [region]: [] });
+      }
+    } catch (error) {
+      console.error("Error fetching timetable data:", error);
+    }
+  };
+
+  const handleAreaSelect = (area: string) => {
+    setSelectedArea(area);
+    setSelectedRoute(null);
+    setCurrentPage(2);
+    fetchTimetableData(area); // Fetch data when region is selected
+  };
+
+  const handleRouteSelect = (route: any) => {
+    setSelectedRoute(route);
+    setCurrentPage(3);
+  };
+
+  const goBack = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
       <h1 className="text-5xl font-extrabold text-blue-700 mb-10 text-center">
+
         Bus Timetable
+
+        Dunedin Bus Timetable
+
       </h1>
 
       {currentPage === 1 && (
