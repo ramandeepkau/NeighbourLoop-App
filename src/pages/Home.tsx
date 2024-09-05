@@ -38,7 +38,7 @@ const Home: React.FC = () => {
   const handleServiceSelect = (service: any) => {
     setSelectedService(service);
     setCurrentPage(4);
-=======
+
   const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
 
