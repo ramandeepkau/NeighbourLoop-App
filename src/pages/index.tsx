@@ -75,6 +75,22 @@ const IndexPage: React.FC = () => {
     setSelectedService(service);
     setCurrentPage(4);
   };
+  
+  // Function to fetch stops and times for the selected service version
+  const fetchStopsForServiceVersion = (service: any) => {
+    const serviceVersion = service.service_versions[0]; // Assuming you're fetching the first version for now.
+    
+    if (serviceVersion && serviceVersion.stops.length > 0) {
+      return serviceVersion.stops.map((stop, stopIndex) => ({
+        address: stop.address,
+        increment: stop.increment,
+      }));
+    } else {
+      return [];
+    }
+  };
+  
+  
 
   const goBack = () => {
     if (currentPage > 1) {
@@ -89,6 +105,7 @@ const IndexPage: React.FC = () => {
     const stopDate = new Date(startDate.getTime() + increment * 60000);
     return stopDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+  
 
   const renderStopsForService = (service) => {
     const today = new Date().toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
@@ -215,28 +232,23 @@ const IndexPage: React.FC = () => {
 
 {currentPage === 4 && selectedService && (
   <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    {/* Initialize currentServiceVersion here */}
-    {(() => {
-      const today = new Date();
-      const dayCode = today.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase().slice(0, 3);
+    <h2 className="text-3xl font-semibold mb-6 text-center">
+      Stops for {selectedService.code} - {selectedService.direction}
+    </h2>
 
-      // Filter trips based on today's dayCode
-      const tripsToday = selectedService.trips.filter(trip => 
-        trip.days.some(day => day.day === dayCode)
-      );
-
-      if (tripsToday.length === 0) {
-        return <p className="text-red-500">No services available for today.</p>;
-      }
-
-      // Set the current service version (using the first trip found for today)
-      const currentServiceVersion = tripsToday[0]?.service_version;
-
-      return (
-        <div>
-          <h2 className="text-3xl font-semibold mb-6 text-center">
-            Stops for {selectedService.code} - {selectedService.direction} (Service Version {currentServiceVersion})
-          </h2>
+    {/* Display service versions */}
+    {selectedService.trips && selectedService.trips.length > 0 ? (
+      selectedService.trips.map((trip, tripIndex) => (
+        <div key={tripIndex} className="mb-6">
+          <h3 className="text-xl font-semibold mb-4">
+            Service Version {trip.service_version}
+          </h3>
+          
+          {/* Add Start Time and Days */}
+          <div className="text-left text-gray-600 mb-4">
+            <p><strong>Start Time:</strong> {trip.start_time}</p>
+            <p><strong>Days:</strong> {trip.days.map((day) => day.day).join(', ')}</p>
+          </div>
 
           <table className="min-w-full table-auto">
             <thead className="bg-gray-50">
@@ -246,28 +258,29 @@ const IndexPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-  {tripsToday[0] && tripsToday[0].stops ? (
-    tripsToday[0].stops.map((stop, stopIndex) => (
-      <tr key={stopIndex}>
-        <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-        <td className="px-6 py-4 text-sm text-gray-700">
-          {getStopTime(tripsToday[0].start_time, stop.increment)}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">
-        No stops available for this trip.
-      </td>
-    </tr>
-  )}
-</tbody>
-
+              {trip.stops && trip.stops.length > 0 ? (
+                trip.stops.map((stop, stopIndex) => (
+                  <tr key={stopIndex}>
+                    <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {getStopTime(trip.start_time, stop.increment)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">
+                    No stops available for this service version.
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
-      );
-    })()}
+      ))
+    ) : (
+      <p className="text-red-500">No services available for today.</p>
+    )}
 
     <button
       className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
