@@ -135,11 +135,10 @@ const IndexPage: React.FC = () => {
             onClick={() => handleRouteSelect(route)}
             style={{ backgroundColor: '#FFFACD', color: 'black' }}
           >
-            {/* Badge for route number */}
+            {/* Display only the route number */}
             <span className="inline-block bg-blue-500 text-white text-lg font-bold px-4 py-2 rounded-full mb-2">
-              {route.title}
+              {route.title}  {/* Assuming 'title' contains the route number */}
             </span>
-            <p className="text-lg">{route.locations}</p> {/* Display locations */}
           </button>
         ))}
       </div>
