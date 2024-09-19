@@ -189,39 +189,71 @@ const sampleStops = [
           )}
 {currentPage === 4 && selectedService && (
   <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
-    <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center">
-        <div className="text-gray-600 mr-2">Select date:</div>
-        <input
-          type="date"
-          className="border rounded p-2"
-          defaultValue={new Date().toISOString().substr(0, 10)}
-        />
-      </div>
-    </div>
-    <table className="min-w-full table-auto">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">All stops</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">6:32 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:02 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:32 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Service</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {sampleStops.map((stop, index) => (
-          <tr key={index}>
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
-            {stop.times.map((time, timeIndex) => (
-              <td key={timeIndex} className="px-6 py-4 text-sm text-gray-700">{time}</td>
-            ))}
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.next_service}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <h2 className="text-3xl font-semibold mb-6 text-center">
+      Stops for {selectedService.code} - {selectedService.direction}
+    </h2>
+
+    {/* Get today's date and day code */}
+    {(() => {
+      const today = new Date();
+      const dayCode = today.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase().slice(0, 3); // e.g., MON, TUE
+
+      // Filter trips for today based on the dayCode
+      const tripsToday = selectedService.trips.filter((trip) =>
+        trip.days.some((day) => day.day === dayCode)
+      );
+
+      if (tripsToday.length === 0) {
+        return <p className="text-red-500">No services available for today.</p>;
+      }
+
+      // Function to calculate stop time by adding increments to start time
+      const calculateStopTime = (startTime, increment) => {
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const tripStartTime = new Date();
+        tripStartTime.setHours(startHour, startMinute, 0);
+        tripStartTime.setMinutes(tripStartTime.getMinutes() + increment);
+        return tripStartTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      };
+
+      return (
+        <div>
+          {tripsToday.map((trip, tripIndex) => (
+            <div key={tripIndex} className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Service Version {trip.service_version}</h3>
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+  {trip && trip.stops && trip.stops.length > 0 ? (
+    trip.stops.map((stop, stopIndex) => (
+      <tr key={stopIndex}>
+        <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+        <td className="px-6 py-4 text-sm text-gray-700">
+          {/* Add more data related to the stop */}
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">
+        No stops available
+      </td>
+    </tr>
+  )}
+</tbody>
+
+              </table>
+            </div>
+          ))}
+        </div>
+      );
+    })()}
+
     <button
       className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
       onClick={goBack}
@@ -230,7 +262,6 @@ const sampleStops = [
     </button>
   </div>
 )}
-
           {/* Optional: Step 4 (Stops display) */}
         </div>
       </div> */
