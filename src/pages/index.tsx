@@ -13,13 +13,13 @@ const IndexPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<mapboxgl.Map | null>(null); // Store the map instance
+  const mapInstance = useRef<mapboxgl.Map | null>(null);
   const router = useRouter();
 
   // Coordinates for Dunedin and Queenstown
   const regions = {
-    DUN: { lng: 170.5046, lat: -45.8788, zoom: 12 }, // Dunedin
-    QUEENSTOWN: { lng: 168.6626, lat: -45.0312, zoom: 12 }, // Queenstown
+    DUN: { lng: 170.5046, lat: -45.8788, zoom: 12 },
+    QUEENSTOWN: { lng: 168.6626, lat: -45.0312, zoom: 12 },
   };
 
   useEffect(() => {
@@ -27,13 +27,13 @@ const IndexPage: React.FC = () => {
       const map = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/light-v11',
-        center: [172.6362, -41.5000], // Centered on New Zealand
-        zoom: 5, // Zoomed out view of New Zealand
+        center: [172.6362, -41.5000],
+        zoom: 5,
       });
 
       map.on('load', () => {
         setMapLoaded(true);
-        mapInstance.current = map; // Save the map instance
+        mapInstance.current = map;
       });
 
       return () => map.remove();
@@ -42,7 +42,6 @@ const IndexPage: React.FC = () => {
 
   const fetchTimetableData = async (region: string) => {
     try {
-      console.log(`Fetching timetable data for region: ${region}`);
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
       const data = await response.json();
       setTimetableData({ [region]: data.routes });
@@ -57,13 +56,12 @@ const IndexPage: React.FC = () => {
     setCurrentPage(2);
     fetchTimetableData(area);
 
-    // Zoom into the selected region
     if (mapInstance.current && regions[area]) {
       const { lng, lat, zoom } = regions[area];
       mapInstance.current.flyTo({
         center: [lng, lat],
         zoom: zoom,
-        essential: true, // Ensures the map animation works smoothly
+        essential: true,
       });
     }
   };
@@ -84,24 +82,73 @@ const IndexPage: React.FC = () => {
     }
   };
 
-// Define sampleStops with some dummy data or fetched data above the return statement
-const sampleStops = [
-  { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
-  { stop_name: "Middleton Rd, 240", times: ["6:33 PM", "7:03 PM", "7:33 PM"], next_service: "10:33 PM" },
-  { stop_name: "Corstorphine Rd, 136", times: ["6:35 PM", "7:05 PM", "7:35 PM"], next_service: "10:35 PM" },
-];
+  const getStopTime = (startTime: string, increment: number) => {
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const startDate = new Date();
+    startDate.setHours(hours, minutes, 0, 0);
+    const stopDate = new Date(startDate.getTime() + increment * 60000);
+    return stopDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
+  const renderStopsForService = (service) => {
+    const today = new Date().toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+    const tripsToday = service.trips.filter(trip =>
+      trip.days.some(day => day.day === today)
+    );
 
+    const [currentServiceVersion, setCurrentServiceVersion] = useState(1); // Keeps track of current service version
+
+    const handleNextServiceVersion = () => {
+      if (selectedService) {
+        const nextVersion = currentServiceVersion + 1;
+        if (nextVersion <= selectedService.trips.length) {
+          setCurrentServiceVersion(nextVersion);
+        }
+      }
+    };
+    
+    const handlePreviousServiceVersion = () => {
+      if (currentServiceVersion > 1) {
+        setCurrentServiceVersion(currentServiceVersion - 1);
+      }
+    }; 
+
+    return (
+      <table className="min-w-full table-auto">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {tripsToday.length > 0 ? (
+            tripsToday.map((trip, tripIndex) => (
+              trip.stops.map((stop, stopIndex) => (
+                <tr key={stopIndex}>
+                  <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {getStopTime(trip.start_time, stop.increment)}
+                  </td>
+                </tr>
+              ))
+            ))
+          ) : (
+            <tr>
+              <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">No stops available for today</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    );
+  };
 
   return (
     <div className="relative h-screen w-screen">
       {/* Map as background */}
-      <div
-        ref={mapContainer}
-        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} 
-      />
+      <div ref={mapContainer} className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} />
 
-      {/* Content in the center */}
+      {/* Content */}
       <div className="relative z-10 flex flex-col justify-center items-center h-full">
         <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl w-full">
           <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
@@ -110,18 +157,10 @@ const sampleStops = [
             <div className="text-center">
               <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <button
-                  className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-                  onClick={() => handleAreaSelect("DUN")}
-                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
-                >
+                <button className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105" onClick={() => handleAreaSelect("DUN")} style={{ backgroundColor: '#FFFACD', color: 'black' }}>
                   Dunedin
                 </button>
-                <button
-                  className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-                  onClick={() => handleAreaSelect("QUEENSTOWN")}
-                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
-                >
+                <button className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105" onClick={() => handleAreaSelect("QUEENSTOWN")} style={{ backgroundColor: '#FFFACD', color: 'black' }}>
                   Queenstown
                 </button>
               </div>
@@ -134,13 +173,7 @@ const sampleStops = [
               {timetableData[selectedArea] && timetableData[selectedArea].length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   {timetableData[selectedArea].map((route: any) => (
-                    <button
-                      key={route.title}
-                      className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-                      onClick={() => handleRouteSelect(route)}
-                      style={{ backgroundColor: '#FFFACD', color: 'black' }}
-                    >
-                      {/* Badge for route number */}
+                    <button key={route.title} className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105" onClick={() => handleRouteSelect(route)} style={{ backgroundColor: '#FFFACD', color: 'black' }}>
                       <span className="inline-block bg-blue-500 text-white text-lg font-bold px-4 py-2 rounded-full mb-2">
                         {route.title}
                       </span>
@@ -150,27 +183,19 @@ const sampleStops = [
               ) : (
                 <p>No routes available for this region.</p>
               )}
-              <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-                onClick={goBack}
-              >
+              <button className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105" onClick={goBack}>
                 Back to Regions
               </button>
             </div>
           )}
 
-          {/* Step 3: Displaying Services */}
           {currentPage === 3 && selectedRoute && (
             <div className="text-center">
               <h2 className="text-3xl font-semibold mb-6">Services for Route {selectedRoute.title}</h2>
               <div className="grid grid-cols-1 gap-6">
                 {selectedRoute.services && selectedRoute.services.length > 0 ? (
                   selectedRoute.services.map((service: any) => (
-                    <div
-                      key={service.code}
-                      className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
-                      onClick={() => handleServiceSelect(service)}
-                    >
+                    <div key={service.code} className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => handleServiceSelect(service)}>
                       <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
                       <p className="text-sm text-gray-700">{service.direction}</p>
                     </div>
@@ -187,69 +212,59 @@ const sampleStops = [
               </button>
             </div>
           )}
+
 {currentPage === 4 && selectedService && (
   <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">
-      Stops for {selectedService.code} - {selectedService.direction}
-    </h2>
-
-    {/* Get today's date and day code */}
+    {/* Initialize currentServiceVersion here */}
     {(() => {
       const today = new Date();
-      const dayCode = today.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase().slice(0, 3); // e.g., MON, TUE
+      const dayCode = today.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase().slice(0, 3);
 
-      // Filter trips for today based on the dayCode
-      const tripsToday = selectedService.trips.filter((trip) =>
-        trip.days.some((day) => day.day === dayCode)
+      // Filter trips based on today's dayCode
+      const tripsToday = selectedService.trips.filter(trip => 
+        trip.days.some(day => day.day === dayCode)
       );
 
       if (tripsToday.length === 0) {
         return <p className="text-red-500">No services available for today.</p>;
       }
 
-      // Function to calculate stop time by adding increments to start time
-      const calculateStopTime = (startTime, increment) => {
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const tripStartTime = new Date();
-        tripStartTime.setHours(startHour, startMinute, 0);
-        tripStartTime.setMinutes(tripStartTime.getMinutes() + increment);
-        return tripStartTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      };
+      // Set the current service version (using the first trip found for today)
+      const currentServiceVersion = tripsToday[0]?.service_version;
 
       return (
         <div>
-          {tripsToday.map((trip, tripIndex) => (
-            <div key={tripIndex} className="mb-6">
-              <h3 className="text-xl font-semibold mb-4">Service Version {trip.service_version}</h3>
-              <table className="min-w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-  {trip && trip.stops && trip.stops.length > 0 ? (
-    trip.stops.map((stop, stopIndex) => (
+          <h2 className="text-3xl font-semibold mb-6 text-center">
+            Stops for {selectedService.code} - {selectedService.direction} (Service Version {currentServiceVersion})
+          </h2>
+
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+  {tripsToday[0] && tripsToday[0].stops ? (
+    tripsToday[0].stops.map((stop, stopIndex) => (
       <tr key={stopIndex}>
         <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
         <td className="px-6 py-4 text-sm text-gray-700">
-          {/* Add more data related to the stop */}
+          {getStopTime(tripsToday[0].start_time, stop.increment)}
         </td>
       </tr>
     ))
   ) : (
     <tr>
       <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">
-        No stops available
+        No stops available for this trip.
       </td>
     </tr>
   )}
 </tbody>
 
-              </table>
-            </div>
-          ))}
+          </table>
         </div>
       );
     })()}
@@ -262,6 +277,8 @@ const sampleStops = [
     </button>
   </div>
 )}
+
+
           {/* Optional: Step 4 (Stops display) */}
         </div>
       </div> */
