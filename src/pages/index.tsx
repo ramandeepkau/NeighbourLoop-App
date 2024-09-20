@@ -50,6 +50,13 @@ const IndexPage: React.FC = () => {
     }
   };
 
+
+  const goBack = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
     setSelectedRoute(null);
@@ -75,84 +82,42 @@ const IndexPage: React.FC = () => {
     setSelectedService(service);
     setCurrentPage(4);
   };
-  
-  // Function to fetch stops and times for the selected service version
-  const fetchStopsForServiceVersion = (service: any) => {
-    const serviceVersion = service.service_versions[0]; // Assuming you're fetching the first version for now.
-    
-    if (serviceVersion && serviceVersion.stops.length > 0) {
-      return serviceVersion.stops.map((stop, stopIndex) => ({
-        address: stop.address,
-        increment: stop.increment,
-      }));
-    } else {
-      return [];
-    }
-  };
-  
-  
 
-  const goBack = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
+  // Helper function to calculate time
   const getStopTime = (startTime: string, increment: number) => {
     const [hours, minutes] = startTime.split(':').map(Number);
     const startDate = new Date();
     startDate.setHours(hours, minutes, 0, 0);
-    const stopDate = new Date(startDate.getTime() + increment * 60000);
-    return stopDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    startDate.setMinutes(startDate.getMinutes() + increment);
+    return startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-  
 
-  const renderStopsForService = (service) => {
-    const today = new Date().toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
-    const tripsToday = service.trips.filter(trip =>
-      trip.days.some(day => day.day === today)
-    );
-
-    const [currentServiceVersion, setCurrentServiceVersion] = useState(1); // Keeps track of current service version
-
-    const handleNextServiceVersion = () => {
-      if (selectedService) {
-        const nextVersion = currentServiceVersion + 1;
-        if (nextVersion <= selectedService.trips.length) {
-          setCurrentServiceVersion(nextVersion);
-        }
-      }
-    };
-    
-    const handlePreviousServiceVersion = () => {
-      if (currentServiceVersion > 1) {
-        setCurrentServiceVersion(currentServiceVersion - 1);
-      }
-    }; 
-
+  // Table for the sketch you provided
+  const renderTimetable = (trip: any) => {
     return (
       <table className="min-w-full table-auto">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Service</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Start Time</th>
             <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Time ➔</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {tripsToday.length > 0 ? (
-            tripsToday.map((trip, tripIndex) => (
-              trip.stops.map((stop, stopIndex) => (
-                <tr key={stopIndex}>
-                  <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {getStopTime(trip.start_time, stop.increment)}
-                  </td>
-                </tr>
-              ))
+          {/* Display mock stop names and times based on the API data */}
+          {trip.stops && trip.stops.length > 0 ? (
+            trip.stops.map((stop: any, index: number) => (
+              <tr key={index}>
+                <td className="px-6 py-4 text-sm text-gray-700">Stop {index + 1}</td> {/* Mock stop names */}
+                <td className="px-6 py-4 text-sm text-gray-700">{trip.start_time}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{getStopTime(trip.start_time, stop.increment)}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{getStopTime(trip.start_time, stop.increment + 5)} ➔</td>
+              </tr>
             ))
           ) : (
             <tr>
-              <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">No stops available for today</td>
+              <td className="px-6 py-4 text-sm text-gray-700" colSpan="4">No stops available for this service.</td>
             </tr>
           )}
         </tbody>
@@ -207,103 +172,74 @@ const IndexPage: React.FC = () => {
           )}
 
           {currentPage === 3 && selectedRoute && (
-            <div className="text-center">
-              <h2 className="text-3xl font-semibold mb-6">Services for Route {selectedRoute.title}</h2>
-              <div className="grid grid-cols-1 gap-6">
-                {selectedRoute.services && selectedRoute.services.length > 0 ? (
-                  selectedRoute.services.map((service: any) => (
-                    <div key={service.code} className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => handleServiceSelect(service)}>
-                      <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
-                      <p className="text-sm text-gray-700">{service.direction}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No services available for this route.</p>
+                        <div className="text-center">
+                        <h2 className="text-3xl font-semibold mb-6">Services for Route {selectedRoute.title}</h2>
+                        <div className="grid grid-cols-1 gap-6">
+                          {selectedRoute.services && selectedRoute.services.length > 0 ? (
+                            selectedRoute.services.map((service: any) => (
+                              <div
+                                key={service.code}
+                                className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+                                onClick={() => handleServiceSelect(service)}
+                              >
+                                <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
+                                <p className="text-sm text-gray-700">{service.direction}</p>
+                              </div>
+                            ))
+                          ) : (
+                            <p>No services available for this route.</p>
+                          )}
+                        </div>
+                        <button
+                          className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                          onClick={goBack}
+                        >
+                          Back to Regions
+                        </button>
+                        </div>
+                         )}
+          
+                    {currentPage === 4 && selectedService && (
+                      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+                        <h2 className="text-3xl font-semibold mb-6 text-center">
+                          Stops for {selectedService.code} - {selectedService.direction}
+                        </h2>
+          
+                        {/* Display the timetable according to the sketch */}
+                        {selectedService.trips && selectedService.trips.length > 0 ? (
+                          selectedService.trips.map((trip: any, tripIndex: number) => (
+                            <div key={tripIndex} className="mb-6">
+                              <h3 className="text-xl font-semibold mb-4">
+                                Service Version {trip.service_version}
+                              </h3>
+                              {/* Render timetable based on the sketch */}
+                              {renderTimetable(trip)}
+                            </div>
+                          ))
+                        ) : (
+                          <p>No services available for this route.</p>
+                        )}
+          
+                        <button
+                          className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                          onClick={goBack}
+                        >
+                          Back to Services
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+          
+                {/* Loading indicator for the map */}
+                {!mapLoaded && (
+                  <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-20 bg-white bg-opacity-80">
+                    <div className="text-2xl text-gray-700">Loading Map...</div>
+                  </div>
                 )}
               </div>
-              <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-                onClick={goBack}
-              >
-                Back to Routes
-              </button>
-            </div>
-          )}
-
-{currentPage === 4 && selectedService && (
-  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">
-      Stops for {selectedService.code} - {selectedService.direction}
-    </h2>
-
-    {/* Display service versions */}
-    {selectedService.trips && selectedService.trips.length > 0 ? (
-      selectedService.trips.map((trip, tripIndex) => (
-        <div key={tripIndex} className="mb-6">
-          <h3 className="text-xl font-semibold mb-4">
-            Service Version {trip.service_version}
-          </h3>
+            );
+          };
           
-          {/* Add Start Time and Days */}
-          <div className="text-left text-gray-600 mb-4">
-            <p><strong>Start Time:</strong> {trip.start_time}</p>
-            <p><strong>Days:</strong> {trip.days.map((day) => day.day).join(', ')}</p>
-          </div>
-
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {trip.stops && trip.stops.length > 0 ? (
-                trip.stops.map((stop, stopIndex) => (
-                  <tr key={stopIndex}>
-                    <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {getStopTime(trip.start_time, stop.increment)}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className="px-6 py-4 text-sm text-gray-700" colSpan="2">
-                    No stops available for this service version.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      ))
-    ) : (
-      <p className="text-red-500">No services available for today.</p>
-    )}
-
-    <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-    >
-      Back to Services
-    </button>
-  </div>
-)}
-
-
-          {/* Optional: Step 4 (Stops display) */}
-        </div>
-      </div> */
-
-      {/* Loading indicator for the map */}
-      {!mapLoaded && (
-        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-20 bg-white bg-opacity-80">
-          <div className="text-2xl text-gray-700">Loading Map...</div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default IndexPage;
+          export default IndexPage;
+          
