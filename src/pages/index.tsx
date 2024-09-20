@@ -40,37 +40,37 @@ const IndexPage: React.FC = () => {
     }
   }, []);
 
+  // Add fetchTimetableData function after the useEffect
   const fetchTimetableData = async (region: string) => {
     try {
       console.log(`Fetching timetable data for region: ${region}`);
-      
-      // Fix the syntax error by adding proper quotation marks around the URL
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
-      
       const data = await response.json();
       setTimetableData({ [region]: data.routes });
     } catch (error) {
       console.error("Error fetching timetable data:", error);
     }
   };
-  
 
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
     setSelectedRoute(null);
     setCurrentPage(2);
+  
+    // Fetch data for the selected region (DUN, QUEENSTOWN)
     fetchTimetableData(area);
-
-    // Zoom into the selected region
+  
+    // Zoom into the selected region on the map
     if (mapInstance.current && regions[area]) {
       const { lng, lat, zoom } = regions[area];
       mapInstance.current.flyTo({
         center: [lng, lat],
         zoom: zoom,
-        essential: true, // Ensures the map animation works smoothly
+        essential: true,
       });
     }
   };
+  
 
   const handleRouteSelect = (route: any) => {
     setSelectedRoute(route);
@@ -88,28 +88,25 @@ const IndexPage: React.FC = () => {
     }
   };
 
-// Define sampleStops with some dummy data or fetched data above the return statement
-const sampleStops = [
-  { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
-  { stop_name: "Middleton Rd, 240", times: ["6:33 PM", "7:03 PM", "7:33 PM"], next_service: "10:33 PM" },
-  { stop_name: "Corstorphine Rd, 136", times: ["6:35 PM", "7:05 PM", "7:35 PM"], next_service: "10:35 PM" },
-];
+  // Define sampleStops with some dummy data or fetched data above the return statement
+  const sampleStops = [
+    { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
+    { stop_name: "Middleton Rd, 240", times: ["6:33 PM", "7:03 PM", "7:33 PM"], next_service: "10:33 PM" },
+    { stop_name: "Corstorphine Rd, 136", times: ["6:35 PM", "7:05 PM", "7:35 PM"], next_service: "10:35 PM" },
+  ];
 
+  return (
+    <div className="relative h-screen w-screen">
+      {/* Map as background */}
+      <div
+        ref={mapContainer}
+        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} 
+      />
 
-return (
-  <div className="relative h-screen w-screen">
-    {/* Map as background */}
-    <div
-      ref={mapContainer}
-      className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} 
-    />
-
-    {/* Content in the center */}
-    <div className="relative z-10 flex flex-col justify-center items-center h-full">
-      <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl w-full">
-        <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
-
-
+      {/* Content in the center */}
+      <div className="relative z-10 flex flex-col justify-center items-center h-full">
+        <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl w-full">
+          <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
 
           {currentPage === 1 && (
             <div className="text-center">
@@ -197,7 +194,7 @@ return (
     <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center">
-        <div className="text-gray-600 mr-2">Select date:</div>
+        <div className="text-gray-600 mr-2">Date:</div>
         <input
           type="date"
           className="border rounded p-2"
