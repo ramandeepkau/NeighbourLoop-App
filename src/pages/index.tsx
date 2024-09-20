@@ -53,24 +53,24 @@ const IndexPage: React.FC = () => {
   };
 
   const handleAreaSelect = (area: string) => {
-    setSelectedArea(area);
-    setSelectedRoute(null);
-    setCurrentPage(2);
-  
-    // Fetch data for the selected region (DUN, QUEENSTOWN)
-    fetchTimetableData(area);
-  
-    // Zoom into the selected region on the map
-    if (mapInstance.current && regions[area]) {
-      const { lng, lat, zoom } = regions[area];
-      mapInstance.current.flyTo({
-        center: [lng, lat],
-        zoom: zoom,
-        essential: true,
-      });
-    }
-  };
-  
+  setSelectedArea(area);
+  setSelectedRoute(null);
+  setCurrentPage(2);
+
+  // Fetch data for the selected region (DUN, QUEENSTOWN)
+  fetchTimetableData(area);
+
+  // Zoom into the selected region on the map
+  if (mapInstance.current && regions[area]) {
+    const { lng, lat, zoom } = regions[area];
+    mapInstance.current.flyTo({
+      center: [lng, lat],
+      zoom: zoom,
+      essential: true,
+    });
+  }
+};
+
 
   const handleRouteSelect = (route: any) => {
     setSelectedRoute(route);
