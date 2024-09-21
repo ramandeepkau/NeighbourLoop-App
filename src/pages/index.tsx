@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
 
@@ -53,23 +54,23 @@ const IndexPage: React.FC = () => {
   };
 
   const handleAreaSelect = (area: string) => {
-  setSelectedArea(area);
-  setSelectedRoute(null);
-  setCurrentPage(2);
+    setSelectedArea(area);
+    setSelectedRoute(null);
+    setCurrentPage(2);
 
-  // Fetch data for the selected region (DUN, QUEENSTOWN)
-  fetchTimetableData(area);
+    // Fetch data for the selected region (DUN, QUEENSTOWN)
+    fetchTimetableData(area);
 
-  // Zoom into the selected region on the map
-  if (mapInstance.current && regions[area]) {
-    const { lng, lat, zoom } = regions[area];
-    mapInstance.current.flyTo({
-      center: [lng, lat],
-      zoom: zoom,
-      essential: true,
-    });
-  }
-};
+    // Zoom into the selected region on the map
+    if (mapInstance.current && regions[area]) {
+      const { lng, lat, zoom } = regions[area];
+      mapInstance.current.flyTo({
+        center: [lng, lat],
+        zoom: zoom,
+        essential: true,
+      });
+    }
+  };
 
 
   const handleRouteSelect = (route: any) => {
@@ -100,7 +101,7 @@ const IndexPage: React.FC = () => {
       {/* Map as background */}
       <div
         ref={mapContainer}
-        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} 
+        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}
       />
 
       {/* Content in the center */}
@@ -115,14 +116,14 @@ const IndexPage: React.FC = () => {
                 <button
                   className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                   onClick={() => handleAreaSelect("DUN")}
-                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                  style={{ backgroundColor: 'var(--secondary-blue)', color: 'black' }}
                 >
                   Dunedin
                 </button>
                 <button
                   className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                   onClick={() => handleAreaSelect("QUEENSTOWN")}
-                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                  style={{ backgroundColor: 'var(--secondary-blue)', color: 'black' }}
                 >
                   Queenstown
                 </button>
@@ -140,10 +141,13 @@ const IndexPage: React.FC = () => {
                       key={route.title}
                       className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                       onClick={() => handleRouteSelect(route)}
-                      style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                      style={{ backgroundColor: 'var(--background-gray)', color: 'black' }}
                     >
                       {/* Badge for route number */}
-                      <span className="inline-block bg-blue-500 text-white text-lg font-bold px-4 py-2 rounded-full mb-2">
+                      <span
+                        className="inline-block text-white text-lg font-bold px-4 py-2 rounded-full mb-2"
+                        style={{ backgroundColor: 'var(--secondary-blue)' }}  // Inline style for background color
+                      >
                         {route.title}
                       </span>
                     </button>
@@ -153,8 +157,11 @@ const IndexPage: React.FC = () => {
                 <p>No routes available for this region.</p>
               )}
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="mt-6 px-4 py-2 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                 onClick={goBack}
+                style={{
+                  backgroundColor: 'var(--global-red)',
+                }}
               >
                 Back to Regions
               </button>
@@ -170,7 +177,8 @@ const IndexPage: React.FC = () => {
                   selectedRoute.services.map((service: any) => (
                     <div
                       key={service.code}
-                      className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+                      className="p-4 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+                      style={{ backgroundColor: 'var(--background-gray)' }} // Use the global variable
                       onClick={() => handleServiceSelect(service)}
                     >
                       <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
@@ -182,56 +190,62 @@ const IndexPage: React.FC = () => {
                 )}
               </div>
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="mt-6 px-4 py-2 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                 onClick={goBack}
+                style={{
+                  backgroundColor: 'var(--global-red)',
+                }}
               >
-                Back to Routes
+                Back to Regions
               </button>
             </div>
           )}
-{currentPage === 4 && selectedService && (
-  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
-    <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center">
-        <div className="text-gray-600 mr-2">Date:</div>
-        <input
-          type="date"
-          className="border rounded p-2"
-          defaultValue={new Date().toISOString().substr(0, 10)}
-        />
-      </div>
-    </div>
-    <table className="min-w-full table-auto">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">All stops</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">6:32 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:02 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:32 PM</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Service</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {sampleStops.map((stop, index) => (
-          <tr key={index}>
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
-            {stop.times.map((time, timeIndex) => (
-              <td key={timeIndex} className="px-6 py-4 text-sm text-gray-700">{time}</td>
-            ))}
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.next_service}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-    >
-      Back to Services
-    </button>
-  </div>
-)}
+          {currentPage === 4 && selectedService && (
+            <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+              <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center">
+                  <div className="text-gray-600 mr-2">Date:</div>
+                  <input
+                    type="date"
+                    className="border rounded p-2"
+                    defaultValue={new Date().toISOString().substr(0, 10)}
+                  />
+                </div>
+              </div>
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">All stops</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">6:32 PM</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:02 PM</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">7:32 PM</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Service</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleStops.map((stop, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
+                      {stop.times.map((time, timeIndex) => (
+                        <td key={timeIndex} className="px-6 py-4 text-sm text-gray-700">{time}</td>
+                      ))}
+                      <td className="px-6 py-4 text-sm text-gray-700">{stop.next_service}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <button
+                className="mt-6 px-4 py-2 text-white font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                onClick={goBack}
+                style={{
+                  backgroundColor: 'var(--global-red)',
+                }}
+              >
+                Back to Services
+              </button>
+            </div>
+          )}
 
           {/* Optional: Step 4 (Stops display) */}
         </div>

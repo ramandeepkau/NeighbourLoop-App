@@ -30,17 +30,18 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-     /* Custom Global Colors */
-    --secondary-blue: #4681F4;
-    --error-red: #ED0800;
-    --warning-yellow: #FFBD03;
-    --success-green: #72FD20;
+    /* Custom Global Colors */
+    --primary-blue: #4681F4;
+    --secondary-blue: #699dff;
+    --global-red: #ED0800;
+    --global-yellow: #FFBD03;
+    --blobal-green: #72FD20;
     --background-gray: #E6E8EB;
     --text-gray: #ADADAD;
     --black: #000000;
 
   }
-  
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -73,6 +74,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
