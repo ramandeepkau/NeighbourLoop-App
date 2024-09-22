@@ -169,46 +169,47 @@ const handleRouteSelect = (route: any) => {
 
       {/* Stops display */}
       {currentPage === 4 && selectedService && (
-        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
-          <div className="flex justify-between items-center mb-4">
-            <div className="text-gray-600 mr-2">Select date:</div>
-            <input
-              type="date"
-              className="border rounded p-2"
-              defaultValue={new Date().toISOString().substr(0, 10)}
-            />
-          </div>
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Next Service</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-            {selectedService && selectedService.stops && selectedService.stops.length > 0 ? (
-    selectedService.stops.map((stop: any, index: number) => (
-        <tr key={index}>
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.name}</td>
-            <td className="px-6 py-4 text-sm text-gray-700">{stop.time}</td>
-        </tr>
-        ))
-        ): (
+  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+    <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+    <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center">
+        <div className="text-gray-600 mr-2">Date:</div>
+        <input
+          type="date"
+          className="border rounded p-2"
+          defaultValue={new Date().toISOString().substr(0, 10)}
+        />
+      </div>
+    </div>
+    <table className="min-w-full table-auto">
+      <thead className="bg-gray-50">
         <tr>
-        <td colSpan={2} className="px-6 py-4 text-center text-sm text-gray-700">No stops available for this service.</td>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
         </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {selectedService.stops && selectedService.stops.length > 0 ? (
+          selectedService.stops.map((stop: any, index: number) => (
+            <tr key={index}>
+              <td className="px-6 py-4 text-sm text-gray-700">{stop.name}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">{stop.time}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td className="px-6 py-4 text-sm text-gray-700" colSpan={2}>No stops available</td>
+          </tr>
         )}
-            </tbody>
-          </table>
-          <button
-            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-            onClick={() => setCurrentPage(3)}
-          >
-            Back to Services
-          </button>
-        </div>
+      </tbody>
+    </table>
+    <button
+      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+      onClick={goBack}
+    >
+      Back to Services
+    </button>
+  </div>
       )}
     </div>
   );
