@@ -22,6 +22,18 @@ const IndexPage: React.FC = () => {
     QUEENSTOWN: { lng: 168.6626, lat: -45.0312, zoom: 12 }, // Queenstown
   };
 
+  // Fetch Regions from the API
+  const fetchRegions = async () => {
+    try {
+      const response = await fetch(`https://bus-app-api-kl95.onrender.com/region_data_app`);
+      const data = await response.json();
+      setRegions(data.regions);  // Assuming the response is an array of regions
+    } catch (error) {
+      console.error("Error fetching regions:", error);
+    }
+  };
+
+ 
   useEffect(() => {
     if (mapContainer.current) {
       const map = new mapboxgl.Map({
