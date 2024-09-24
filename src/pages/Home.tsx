@@ -9,12 +9,10 @@ const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [regions, setRegions] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-  const [stopPage, setStopPage] = useState<number>(0); // For stop pagination
+  const [visibleColumn, setVisibleColumn] = useState<number>(0);
 
   const router = useRouter();
 
-  // Fetch regions from API
   useEffect(() => {
     const fetchRegions = async () => {
       try {
@@ -47,13 +45,12 @@ const Home: React.FC = () => {
     }
   };
 
-   // Define the goBack function here to handle page navigation
-   const goBack = () => {
+  const goBack = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
-  
+
   const handleRouteSelect = (route: any) => {
     setSelectedRoute(route);
     setCurrentPage(3);
@@ -66,29 +63,33 @@ const Home: React.FC = () => {
     );
   };
 
-  // Sample stop data
+  // Logic to show the next or previous time column
+  const handleNextColumn = () => {
+    setVisibleColumn((prevColumn) => prevColumn + 1);
+  };
+
+  const handlePrevColumn = () => {
+    if (visibleColumn > 0) {
+      setVisibleColumn((prevColumn) => prevColumn - 1);
+    }
+  };
+
+  // Increment calculation for time, assuming start time at 7:00 AM
+  const calculateStopTime = (startTime: string, increment: number) => {
+    const tripStartTime = new Date(`1970-01-01T07:00:00`); // Fixed start time at 7:00 AM
+    const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
+    return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Sample stop data, replacing static times with API increment logic
   const sampleStops = [
     { stop_name: "Middleton Rd, 292", increment: 0 },
-    { stop_name: "Middleton Rd, 240", increment: 1 },
-    { stop_name: "Corstorphine Rd, 136", increment: 3 },
-    { stop_name: "Corstorphine Rd, 12", increment: 4 },
-    { stop_name: "Playfair St, 66", increment: 6 },
+    { stop_name: "Middleton Rd, 240", increment: 2 },
+    { stop_name: "Corstorphine Rd, 136", increment: 5 },
+    { stop_name: "Corstorphine Rd, 12", increment: 7 },
+    { stop_name: "Playfair St, 66", increment: 9 },
     // Add more stops as needed
   ];
-
-  const stopsPerPage = 3; // Number of stops to show per page
-
-  const handleNextPage = () => {
-    if ((stopPage + 1) * stopsPerPage < sampleStops.length) {
-      setStopPage(stopPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (stopPage > 0) {
-      setStopPage(stopPage - 1);
-    }
-  };
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
@@ -96,7 +97,6 @@ const Home: React.FC = () => {
         Bus Timetable
       </h1>
 
-      {/* Loading state */}
       {loading ? (
         <p>Loading regions...</p>
       ) : (
@@ -104,80 +104,65 @@ const Home: React.FC = () => {
           <div className="text-center">
             <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Dynamically render regions */}
-              {!loading && regions?.length > 0 ? (
-              regions.map((region: any) => (
-              <button
-              key={region.id}
-             className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-             onClick={() => handleAreaSelect(region.id)}
-            style={{ backgroundColor: '#FFFACD', color: 'black' }}
+              {regions.map((region: any) => (
+                <button
+                  key={region.id}
+                  className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                  onClick={() => handleAreaSelect(region.id)}
+                  style={{ backgroundColor: '#FFFACD', color: 'black' }}
                 >
-            {region.region_name}  {/* Correct region name */}
-            </button>
-            ))
-            ) : (
-          <p>No regions available.</p>
-          )}
+                  {region.region_name}
+                </button>
+              ))}
             </div>
           </div>
         )
       )}
 
-{currentPage === 2 && selectedArea && (
-  <div className="text-center">
-    <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
-    {timetableData[selectedArea] && timetableData[selectedArea].length > 0 ? (
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {timetableData[selectedArea].map((route: any) => (
+      {currentPage === 2 && selectedArea && (
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {timetableData[selectedArea]?.map((route: any) => (
+              <button
+                key={route.title}
+                className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                onClick={() => handleRouteSelect(route)}
+                style={{ backgroundColor: '#FFFACD', color: 'black' }}
+              >
+                {route.title}
+              </button>
+            ))}
+          </div>
           <button
-            key={route.title}
-            className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-            onClick={() => handleRouteSelect(route)}
-            style={{ backgroundColor: '#FFFACD', color: 'black' }}
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600"
+            onClick={goBack}
           >
-            {route.title}
+            Back to Regions
           </button>
-        ))}
-      </div>
-    ) : (
-      <p>No routes available for this region.</p>
-    )}
-    <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-    >
-      Back to Regions
-    </button>
-  </div>
-)}
+        </div>
+      )}
 
-
-      {/* Service selection */}
       {currentPage === 3 && selectedRoute && (
         <div className="text-center">
           <h2 className="text-3xl font-semibold mb-6">Services for Route {selectedRoute.title}</h2>
           <div className="grid grid-cols-1 gap-6">
-            {selectedRoute.services && selectedRoute.services.length > 0 ? (
-              selectedRoute.services.map((service: any) => (
-                <div
-                  key={service.code}
-                  className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
-                  onClick={() => {
-                    setSelectedService(service);
-                    setCurrentPage(4);
-                  }}
-                >
-                  <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
-                  <p className="text-sm text-gray-700">{service.direction}</p>
-                </div>
-              ))
-            ) : (
-              <p>No services available for this route.</p>
-            )}
+            {selectedRoute.services.map((service: any) => (
+              <div
+                key={service.code}
+                className="p-4 bg-blue-100 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+                onClick={() => {
+                  setSelectedService(service);
+                  setCurrentPage(4);
+                }}
+              >
+                <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
+                <p className="text-sm text-gray-700">{service.direction}</p>
+              </div>
+            ))}
           </div>
           <button
-            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
             onClick={() => setCurrentPage(2)}
           >
             Back to Routes
@@ -185,56 +170,56 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Stops display */}
-      {currentPage === 4 && selectedService && (
+       {/* Stops display */}
+       {currentPage === 4 && selectedService && (
         <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
           <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
 
           {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
             <div key={index} className="mb-4">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-bold text-gray-700">Trip Start Time: {trip.start_time}</h3>
+                {/* <h3 className="text-lg font-bold text-gray-700">Trip Start Time: 7:00 AM</h3> */}
               </div>
 
-              <table className="min-w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleStops.slice(stopPage * stopsPerPage, (stopPage + 1) * stopsPerPage).map((stop: any, stopIndex: number) => {
-                    const tripStartTime = new Date(`1970-01-01T${trip.start_time}:00`);
-                    const stopTime = new Date(tripStartTime.getTime() + stop.increment * 60000);
-                    const formattedStopTime = stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                         {/* Arrows for navigating time columns */}
+<div className="flex justify-between mb-4">
+  <button
+    className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+    onClick={handlePrevColumn}
+    disabled={visibleColumn === 0} // Disable button when on the first column (start time)
+  >
+    {/* Left arrow button without text */}
+    <span>&#8249;</span>
+  </button>
+  <button
+    className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+    onClick={handleNextColumn}
+  >
+    {/* Right arrow button without text */}
+    <span>&#8250;</span>
+  </button>
+</div>
 
-                    return (
-                      <tr key={stopIndex}>
-                        <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700">{formattedStopTime}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+{/* Display the stops and calculated times */}
+<table className="min-w-full table-auto">
+  <thead className="bg-gray-50">
+    <tr>
+      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+    </tr>
+  </thead>
+  <tbody className="bg-white divide-y divide-gray-200">
+    {sampleStops.map((stop: any, stopIndex: number) => (
+      <tr key={stopIndex}>
+        <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
+        <td className="px-6 py-4 text-sm text-gray-700">
+          {calculateStopTime('07:00', stop.increment + visibleColumn * 30)}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
-              <div className="flex justify-between mt-4">
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-                  onClick={handlePrevPage}
-                  disabled={stopPage === 0}
-                >
-                  Previous
-                </button>
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-                  onClick={handleNextPage}
-                  disabled={(stopPage + 1) * stopsPerPage >= sampleStops.length}
-                >
-                  Next
-                </button>
-              </div>
             </div>
           ))}
 
@@ -251,3 +236,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
