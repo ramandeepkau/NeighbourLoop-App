@@ -20,7 +20,6 @@ const CombinedPage: React.FC = () => {
 
   const router = useRouter();
 
-  // Fetch regions from API
   useEffect(() => {
     const fetchRegions = async () => {
       try {
@@ -115,16 +114,17 @@ const CombinedPage: React.FC = () => {
     }
   };
 
+  // Fixing the time increment feature
   const calculateStopTime = (startTime: string, increment: number) => {
     const [hours, minutes] = startTime.split(':').map(Number);
     const tripStartTime = new Date();
     tripStartTime.setHours(hours);
     tripStartTime.setMinutes(minutes);
-  
+
     const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
     return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
-  
+
   return (
     <div className="relative h-screen w-screen">
       {/* Map background */}
@@ -209,10 +209,10 @@ const CombinedPage: React.FC = () => {
                   ))
                 ) : (
                   <p>No services available for this route.</p>
-              )}
+                )}
               </div>
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to             pink-600 transform transition-transform duration-300 hover:scale-105"
                 onClick={goBack}
               >
                 Back to Routes
@@ -226,7 +226,7 @@ const CombinedPage: React.FC = () => {
               <h2 className="text-3xl font-semibold mb-6 text-center">
                 Stops for {selectedService.code}
               </h2>
-              
+
               <div className="flex justify-between items-center mb-4">
                 <button
                   className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
@@ -258,7 +258,7 @@ const CombinedPage: React.FC = () => {
                         <tr key={stopIndex}>
                           <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
                           <td className="px-6 py-4 text-sm text-gray-700">
-                            {calculateStopTime(trip.start_time, stop.increment)}
+                            {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
                           </td>
                         </tr>
                       ))}
@@ -288,3 +288,4 @@ const CombinedPage: React.FC = () => {
 };
 
 export default CombinedPage;
+
