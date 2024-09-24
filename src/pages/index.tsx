@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -16,6 +16,7 @@ const CombinedPage: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<mapboxgl.Map | null>(null); // Store the map instance
   const [loading, setLoading] = useState<boolean>(true); // Add loading state
+  const [visibleColumn, setVisibleColumn] = useState<number>(0);
 
   const router = useRouter();
 
@@ -91,6 +92,37 @@ const CombinedPage: React.FC = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const getCurrentDayTrips = (service: any) => {
+    const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
+    
+    // Filter trips that match today's day
+    return service.trips.filter((trip: any) =>
+      trip.days.some((day: any) => day.day === today)
+    );
+  };
+
+  // Function to retrieve stops for the correct service version
+  const getStopsForCurrentServiceVersion = (service: any, serviceVersion: number) => {
+    const versionData = service.service_versions.find((version: any) => version.version === serviceVersion);
+    return versionData ? versionData.stops : [];
+  };
+
+  const handleNextColumn = () => {
+    setVisibleColumn((prevColumn) => prevColumn + 1);
+  };
+
+  const handlePrevColumn = () => {
+    if (visibleColumn > 0) {
+      setVisibleColumn((prevColumn) => prevColumn - 1);
+    }
+  };
+
+  const calculateStopTime = (startTime: string, increment: number) => {
+    const tripStartTime = new Date(`1970-01-01T${startTime}:00`);
+    const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
+    return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   // Display regions dynamically
@@ -177,12 +209,12 @@ const CombinedPage: React.FC = () => {
                       }}
                     >
                       <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
-                      <p className="text-sm text-gray-700">{service.direction}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No services available for this route.</p>
-                )}
+                    <p className="text-sm text-gray-700">{service.direction}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No services available for this route.</p>
+              )}
               </div>
               <button
                 className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
@@ -199,16 +231,24 @@ const CombinedPage: React.FC = () => {
               <h2 className="text-3xl font-semibold mb-6 text-center">
                 Stops for {selectedService.code}
               </h2>
+              
               <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center">
-                  <div className="text-gray-600 mr-2">Date:</div>
-                  <input
-                    type="date"
-                    className="border rounded p-2"
-                    defaultValue={new Date().toISOString().substr(0, 10)}
-                  />
-                </div>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handlePrevColumn}
+                  disabled={visibleColumn === 0}
+                >
+                  &lt;
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handleNextColumn}
+                >
+                  &gt;
+                </button>
               </div>
+
+              {/* Stops Table */}
               <table className="min-w-full table-auto">
                 <thead className="bg-gray-50">
                   <tr>
@@ -217,24 +257,22 @@ const CombinedPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {selectedService.stops && selectedService.stops.length > 0 ? (
-                    selectedService.stops.map((stop: any, index: number) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 text-sm text-gray-700">{stop.name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700">{stop.time}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td className="px-6 py-4 text-sm text-gray-700" colSpan={2}>
-                        No stops available
-                      </td>
-                    </tr>
-                  )}
+                  {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+                    <React.Fragment key={index}>
+                      {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
+                        <tr key={stopIndex}>
+                          <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {calculateStopTime(trip.start_time, stop.increment)}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
                 </tbody>
               </table>
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
                 onClick={goBack}
               >
                 Back to Services
