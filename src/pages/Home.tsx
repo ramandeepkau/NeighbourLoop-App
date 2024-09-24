@@ -58,12 +58,20 @@ const Home: React.FC = () => {
 
   const getCurrentDayTrips = (service: any) => {
     const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
+    
+    // Filter trips that match today's day
     return service.trips.filter((trip: any) =>
       trip.days.some((day: any) => day.day === today)
     );
   };
+  
+  // Function to retrieve stops for the correct service version
+  const getStopsForCurrentServiceVersion = (service: any, serviceVersion: number) => {
+    const versionData = service.service_versions.find((version: any) => version.version === serviceVersion);
+    return versionData ? versionData.stops : [];
+  };
 
-  // Logic to show the next or previous time column
+
   const handleNextColumn = () => {
     setVisibleColumn((prevColumn) => prevColumn + 1);
   };
@@ -74,22 +82,11 @@ const Home: React.FC = () => {
     }
   };
 
-  // Increment calculation for time, assuming start time at 7:00 AM
   const calculateStopTime = (startTime: string, increment: number) => {
-    const tripStartTime = new Date(`1970-01-01T07:00:00`); // Fixed start time at 7:00 AM
+    const tripStartTime = new Date(`1970-01-01T${startTime}:00`);
     const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
     return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-
-  // Sample stop data, replacing static times with API increment logic
-  const sampleStops = [
-    { stop_name: "Middleton Rd, 292", increment: 0 },
-    { stop_name: "Middleton Rd, 240", increment: 2 },
-    { stop_name: "Corstorphine Rd, 136", increment: 5 },
-    { stop_name: "Corstorphine Rd, 12", increment: 7 },
-    { stop_name: "Playfair St, 66", increment: 9 },
-    // Add more stops as needed
-  ];
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
@@ -170,67 +167,65 @@ const Home: React.FC = () => {
         </div>
       )}
 
-       {/* Stops display */}
-       {currentPage === 4 && selectedService && (
-        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+      {currentPage === 4 && selectedService && (
+    <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+      <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
 
-          {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-center mb-2">
-                {/* <h3 className="text-lg font-bold text-gray-700">Trip Start Time: 7:00 AM</h3> */}
+      {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+        <div key={index} className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-bold text-gray-700">Trip Start Time: {trip.start_time}</h3>
+          </div>
+
+              {/* Arrows for navigating time columns */}
+              <div className="flex justify-between mb-4">
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handlePrevColumn}
+                  disabled={visibleColumn === 0}
+                >
+                  &lt;
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handleNextColumn}
+                >
+                  &gt;
+                </button>
               </div>
 
-                         {/* Arrows for navigating time columns */}
-<div className="flex justify-between mb-4">
-  <button
-    className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-    onClick={handlePrevColumn}
-    disabled={visibleColumn === 0} // Disable button when on the first column (start time)
-  >
-    {/* Left arrow button without text */}
-    <span>&#8249;</span>
-  </button>
-  <button
-    className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-    onClick={handleNextColumn}
-  >
-    {/* Right arrow button without text */}
-    <span>&#8250;</span>
-  </button>
-</div>
+              {/* Stops Table */}
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
+                <tr key={stopIndex}>
+                  <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {calculateStopTime(trip.start_time, stop.increment)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-{/* Display the stops and calculated times */}
-<table className="min-w-full table-auto">
-  <thead className="bg-gray-50">
-    <tr>
-      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-    </tr>
-  </thead>
-  <tbody className="bg-white divide-y divide-gray-200">
-    {sampleStops.map((stop: any, stopIndex: number) => (
-      <tr key={stopIndex}>
-        <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
-        <td className="px-6 py-4 text-sm text-gray-700">
-          {calculateStopTime('07:00', stop.increment + visibleColumn * 30)}
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
-            </div>
-          ))}
-
-          <button
-            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
-            onClick={() => setCurrentPage(3)}
-          >
-            Back to Services
-          </button>
         </div>
-      )}
+      ))}
+
+      <button
+        className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+        onClick={() => setCurrentPage(3)}
+      >
+        Back to Services
+      </button>
+    </div>
+  )
+}
     </div>
   );
 };
