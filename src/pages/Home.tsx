@@ -58,19 +58,10 @@ const Home: React.FC = () => {
 
   const getCurrentDayTrips = (service: any) => {
     const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
-    
-    // Filter trips that match today's day
     return service.trips.filter((trip: any) =>
       trip.days.some((day: any) => day.day === today)
     );
   };
-  
-  // Function to retrieve stops for the correct service version
-  const getStopsForCurrentServiceVersion = (service: any, serviceVersion: number) => {
-    const versionData = service.service_versions.find((version: any) => version.version === serviceVersion);
-    return versionData ? versionData.stops : [];
-  };
-
 
   const handleNextColumn = () => {
     setVisibleColumn((prevColumn) => prevColumn + 1);
@@ -168,14 +159,14 @@ const Home: React.FC = () => {
       )}
 
       {currentPage === 4 && selectedService && (
-    <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-      <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
 
-      {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
-        <div key={index} className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-bold text-gray-700">Trip Start Time: {trip.start_time}</h3>
-          </div>
+          {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+            <div key={index} className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                {/* <h3 className="text-lg font-bold text-gray-700">Trip Start Time: {trip.start_time}</h3> */}
+              </div>
 
               {/* Arrows for navigating time columns */}
               <div className="flex justify-between mb-4">
@@ -194,41 +185,38 @@ const Home: React.FC = () => {
                 </button>
               </div>
 
-              {/* Stops Table */}
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
-                <tr key={stopIndex}>
-                  <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {calculateStopTime(trip.start_time, stop.increment)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              {/* Display the stops and calculated times */}
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {selectedService.service_versions[0]?.stops.map((stop: any, stopIndex: number) => (
+                    <tr key={stop.stop_id}>
+                      <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
 
-        </div>
-      ))}
-
-      <button
-        className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
-        onClick={() => setCurrentPage(3)}
-      >
-        Back to Services
-      </button>
-    </div>
-  )
-}
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+            onClick={() => setCurrentPage(3)}
+          >
+            Back to Services
+          </button>
+          </div>
+      )}
     </div>
   );
 };
 
 export default Home;
-
