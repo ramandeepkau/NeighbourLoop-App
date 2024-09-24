@@ -7,8 +7,10 @@ const Home: React.FC = () => {
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [timetableData, setTimetableData] = useState<any>({});
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [regions, setRegions] = useState<any[]>([]); // Initialize as an empty array
-  const [loading, setLoading] = useState<boolean>(true); // Add loading state
+  const [regions, setRegions] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const [stopPage, setStopPage] = useState<number>(0); // For stop pagination
 
   const router = useRouter();
 
@@ -18,8 +20,7 @@ const Home: React.FC = () => {
       try {
         const response = await fetch('https://bus-app-api-kl95.onrender.com/region_data_app');
         const data = await response.json();
-        console.log("API Data:", data);  // Log the full response
-        setRegions(data.data); // Make sure to set 'data'
+        setRegions(data.data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching regions:', error);
@@ -28,50 +29,67 @@ const Home: React.FC = () => {
     };
     fetchRegions();
   }, []);
-  
-  
 
   const handleAreaSelect = (area: string) => {
     setSelectedArea(area);
     setSelectedRoute(null);
     setCurrentPage(2);
     fetchTimetableData(area);
-    
-    console.log('Fetching timetable for area:', area);
   };
-  
+
   const fetchTimetableData = async (region: string) => {
     try {
       const response = await fetch(`https://bus-app-api-kl95.onrender.com/timetable_data_app/${region}`);
       const data = await response.json();
-      console.log('Timetable Data:', data);  // Add this to inspect data
       setTimetableData({ [region]: data.routes });
     } catch (error) {
       console.error("Error fetching timetable data:", error);
     }
   };
+
+   // Define the goBack function here to handle page navigation
+   const goBack = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   
-  // Add this function in your code
-const goBack = () => {
-  if (currentPage > 1) {
-    setCurrentPage(currentPage - 1);
-  }
-};
+  const handleRouteSelect = (route: any) => {
+    setSelectedRoute(route);
+    setCurrentPage(3);
+  };
 
-const handleRouteSelect = (route: any) => {
-  setSelectedRoute(route);
-  setCurrentPage(3); // Go to the next page after selecting a route
-};
+  const getCurrentDayTrips = (service: any) => {
+    const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
+    return service.trips.filter((trip: any) =>
+      trip.days.some((day: any) => day.day === today)
+    );
+  };
 
-
-  // Define sampleStops with proper typing
+  // Sample stop data
   const sampleStops = [
-    { stop_name: "Middleton Rd, 292", times: ["6:32 PM", "7:02 PM", "7:32 PM"], next_service: "10:32 PM" },
-    { stop_name: "Middleton Rd, 240", times: ["6:33 PM", "7:03 PM", "7:33 PM"], next_service: "10:33 PM" },
-    { stop_name: "Corstorphine Rd, 136", times: ["6:35 PM", "7:05 PM", "7:35 PM"], next_service: "10:35 PM" }
+    { stop_name: "Middleton Rd, 292", increment: 0 },
+    { stop_name: "Middleton Rd, 240", increment: 1 },
+    { stop_name: "Corstorphine Rd, 136", increment: 3 },
+    { stop_name: "Corstorphine Rd, 12", increment: 4 },
+    { stop_name: "Playfair St, 66", increment: 6 },
+    // Add more stops as needed
   ];
 
-  // Check if regions are loaded before rendering
+  const stopsPerPage = 3; // Number of stops to show per page
+
+  const handleNextPage = () => {
+    if ((stopPage + 1) * stopsPerPage < sampleStops.length) {
+      setStopPage(stopPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (stopPage > 0) {
+      setStopPage(stopPage - 1);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 p-6">
       <h1 className="text-5xl font-extrabold text-blue-700 mb-10 text-center">
@@ -169,47 +187,64 @@ const handleRouteSelect = (route: any) => {
 
       {/* Stops display */}
       {currentPage === 4 && selectedService && (
-  <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-    <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
-    <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center">
-        <div className="text-gray-600 mr-2">Date:</div>
-        <input
-          type="date"
-          className="border rounded p-2"
-          defaultValue={new Date().toISOString().substr(0, 10)}
-        />
-      </div>
-    </div>
-    <table className="min-w-full table-auto">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {selectedService.stops && selectedService.stops.length > 0 ? (
-          selectedService.stops.map((stop: any, index: number) => (
-            <tr key={index}>
-              <td className="px-6 py-4 text-sm text-gray-700">{stop.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-700">{stop.time}</td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td className="px-6 py-4 text-sm text-gray-700" colSpan={2}>No stops available</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-    <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-    >
-      Back to Services
-    </button>
-  </div>
+        <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Stops for {selectedService.code}</h2>
+
+          {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+            <div key={index} className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-bold text-gray-700">Trip Start Time: {trip.start_time}</h3>
+              </div>
+
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleStops.slice(stopPage * stopsPerPage, (stopPage + 1) * stopsPerPage).map((stop: any, stopIndex: number) => {
+                    const tripStartTime = new Date(`1970-01-01T${trip.start_time}:00`);
+                    const stopTime = new Date(tripStartTime.getTime() + stop.increment * 60000);
+                    const formattedStopTime = stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return (
+                      <tr key={stopIndex}>
+                        <td className="px-6 py-4 text-sm text-gray-700">{stop.stop_name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{formattedStopTime}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              <div className="flex justify-between mt-4">
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handlePrevPage}
+                  disabled={stopPage === 0}
+                >
+                  Previous
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+                  onClick={handleNextPage}
+                  disabled={(stopPage + 1) * stopsPerPage >= sampleStops.length}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ))}
+
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+            onClick={() => setCurrentPage(3)}
+          >
+            Back to Services
+          </button>
+        </div>
       )}
     </div>
   );
