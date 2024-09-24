@@ -193,8 +193,8 @@ const CombinedPage: React.FC = () => {
             </div>
           )}
 
-                    {/* Stops display */}
-                    {currentPage === 4 && selectedService && (
+          {/* Stops display */}
+          {currentPage === 4 && selectedService && (
             <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
               <h2 className="text-3xl font-semibold mb-6 text-center">
                 Stops for {selectedService.code}
@@ -255,4 +255,3 @@ const CombinedPage: React.FC = () => {
 };
 
 export default CombinedPage;
-
