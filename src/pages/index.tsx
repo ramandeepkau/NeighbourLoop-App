@@ -10,12 +10,12 @@ const CombinedPage: React.FC = () => {
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
   const [selectedService, setSelectedService] = useState<any | null>(null);
   const [timetableData, setTimetableData] = useState<any>({});
-  const [regions, setRegions] = useState<any[]>([]); // Initialize as an empty array
+  const [regions, setRegions] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<mapboxgl.Map | null>(null); // Store the map instance
-  const [loading, setLoading] = useState<boolean>(true); // Add loading state
+  const mapInstance = useRef<mapboxgl.Map | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [visibleColumn, setVisibleColumn] = useState<number>(0);
 
   const router = useRouter();
@@ -26,11 +26,11 @@ const CombinedPage: React.FC = () => {
       try {
         const response = await fetch('https://bus-app-api-kl95.onrender.com/region_data_app');
         const data = await response.json();
-        setRegions(data.data); // Make sure to set 'data'
-        setLoading(false); // Set loading to false after fetching
+        setRegions(data.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching regions:', error);
-        setLoading(false); // Stop loading even if there is an error
+        setLoading(false);
       }
     };
     fetchRegions();
@@ -41,13 +41,13 @@ const CombinedPage: React.FC = () => {
       const map = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/light-v11',
-        center: [172.6362, -41.5000], // Centered on New Zealand
-        zoom: 5, // Zoomed out view of New Zealand
+        center: [172.6362, -41.5000],
+        zoom: 5,
       });
 
       map.on('load', () => {
         setMapLoaded(true);
-        mapInstance.current = map; // Save the map instance
+        mapInstance.current = map;
       });
 
       return () => map.remove();
@@ -60,7 +60,7 @@ const CombinedPage: React.FC = () => {
       const data = await response.json();
       setTimetableData({ [region]: data.routes });
     } catch (error) {
-      console.error("Error fetching timetable data:", error);
+      console.error('Error fetching timetable data:', error);
     }
   };
 
@@ -71,12 +71,11 @@ const CombinedPage: React.FC = () => {
     setCurrentPage(2);
     fetchTimetableData(area);
 
-    // Zoom into the selected region on the map
     if (mapInstance.current && regions.find(r => r.id === area)) {
       const regionData = regions.find(r => r.id === area);
-      const { lng, lat, zoom } = regionData;  // Adjust if the API gives longitude and latitude
+      const { lng, lat, zoom } = regionData;
       mapInstance.current.flyTo({
-        center: [lng || 170.5046, lat || -45.8788], // Default to Dunedin coords if not present
+        center: [lng || 170.5046, lat || -45.8788],
         zoom: zoom || 12,
         essential: true,
       });
@@ -85,7 +84,7 @@ const CombinedPage: React.FC = () => {
 
   const handleRouteSelect = (route: any) => {
     setSelectedRoute(route);
-    setCurrentPage(3); // Go to the next page after selecting a route
+    setCurrentPage(3);
   };
 
   const goBack = () => {
@@ -96,14 +95,11 @@ const CombinedPage: React.FC = () => {
 
   const getCurrentDayTrips = (service: any) => {
     const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
-    
-    // Filter trips that match today's day
     return service.trips.filter((trip: any) =>
       trip.days.some((day: any) => day.day === today)
     );
   };
 
-  // Function to retrieve stops for the correct service version
   const getStopsForCurrentServiceVersion = (service: any, serviceVersion: number) => {
     const versionData = service.service_versions.find((version: any) => version.version === serviceVersion);
     return versionData ? versionData.stops : [];
@@ -120,32 +116,33 @@ const CombinedPage: React.FC = () => {
   };
 
   const calculateStopTime = (startTime: string, increment: number) => {
-    const tripStartTime = new Date(`1970-01-01T${startTime}:00`);
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const tripStartTime = new Date();
+    tripStartTime.setHours(hours);
+    tripStartTime.setMinutes(minutes);
+  
     const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
-    return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
-
-  // Display regions dynamically
+  
   return (
     <div className="relative h-screen w-screen">
       {/* Map background */}
       <div
         ref={mapContainer}
-        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`} 
+        className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ${mapLoaded ? 'opacity-100' : 'opacity-0'}`}
       />
 
       <div className="relative z-10 flex flex-col justify-center items-center h-full">
         <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl w-full">
           <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
 
-          {/* Loading state for regions */}
           {loading ? (
             <p>Loading regions...</p>
           ) : currentPage === 1 ? (
             <div className="text-center">
               <h2 className="text-3xl font-semibold mb-6">Choose Your Region</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Render regions dynamically */}
                 {regions.length > 0 ? (
                   regions.map((region: any) => (
                     <button
@@ -164,7 +161,6 @@ const CombinedPage: React.FC = () => {
             </div>
           ) : null}
 
-          {/* Route selection */}
           {currentPage === 2 && selectedArea && (
             <div className="text-center">
               <h2 className="text-3xl font-semibold mb-6">Select a Route</h2>
@@ -193,7 +189,6 @@ const CombinedPage: React.FC = () => {
             </div>
           )}
 
-          {/* Service selection */}
           {currentPage === 3 && selectedRoute && (
             <div className="text-center">
               <h2 className="text-3xl font-semibold mb-6">Services for Route {selectedRoute.title}</h2>
@@ -209,11 +204,11 @@ const CombinedPage: React.FC = () => {
                       }}
                     >
                       <h3 className="text-lg font-bold text-blue-700 mb-1">Service {service.code}</h3>
-                    <p className="text-sm text-gray-700">{service.direction}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No services available for this route.</p>
+                      <p className="text-sm text-gray-700">{service.direction}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No services available for this route.</p>
               )}
               </div>
               <button
