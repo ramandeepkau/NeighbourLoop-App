@@ -151,7 +151,7 @@ const CombinedPage: React.FC = () => {
                       key={region.id}
                       className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                       onClick={() => handleAreaSelect(region.id)}
-                      style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                      style={{ backgroundColor: 'dodgerblue', color: 'black' }}
                     >
                       {region.region_name}
                     </button>
@@ -173,7 +173,7 @@ const CombinedPage: React.FC = () => {
                       key={route.title}
                       className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                       onClick={() => handleRouteSelect(route)}
-                      style={{ backgroundColor: '#FFFACD', color: 'black' }}
+                      style={{ backgroundColor: 'dodgerblue', color: 'black' }}
                     >
                       {route.title}
                     </button>
@@ -183,8 +183,9 @@ const CombinedPage: React.FC = () => {
                 <p>No routes available for this region.</p>
               )}
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                 onClick={goBack}
+                style={{ backgroundColor: 'lightgrey', color: 'black' }}
               >
                 Back to Regions
               </button>
@@ -214,8 +215,9 @@ const CombinedPage: React.FC = () => {
                 )}
               </div>
               <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to             pink-600 transform transition-transform duration-300 hover:scale-105"
+                className="m-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                 onClick={goBack}
+                style={{ backgroundColor: 'lightgrey', color: 'black' }}
               >
                 Back to Routes
               </button>
@@ -276,8 +278,9 @@ const CombinedPage: React.FC = () => {
     </table>
 
     <button
-      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+      className="mm-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
       onClick={goBack}
+      style={{ backgroundColor: 'lightgrey', color: 'black' }}
     >
                 Back to Services
               </button>
