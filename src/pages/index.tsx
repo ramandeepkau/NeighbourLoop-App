@@ -223,57 +223,62 @@ const CombinedPage: React.FC = () => {
           )}
 
            {/* Stops display container moved upwards */}
-      {currentPage === 4 && selectedService && (
-        
-        <div className="w-1/4 h-3/4 bg-white p-6 rounded-lg shadow-lg absolute top-20 left-10">
-          <h2 className="text-3xl font-semibold mb-6 text-center">
-            Stops for {selectedService.code}
-          </h2>
+           {currentPage === 4 && selectedService && (
+  <div className="w-full md:w-1/2 lg:w-1/3 h-3/4 bg-white p-6 rounded-lg shadow-lg absolute top-20 left-5 sm:left-10">
+    <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
+      Stops for {selectedService.code}
+    </h2>
 
-          <div className="flex justify-between items-center mb-4">
-            <button
-              className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-              onClick={handlePrevColumn}
-              disabled={visibleColumn === 0}
-            >
-              &lt;
-            </button>
-            <button
-              className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-              onClick={handleNextColumn}
-            >
-              &gt;
-            </button>
-          </div>
+    <div className="flex justify-between items-center mb-4">
+      <button
+        className="px-2 md:px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+        onClick={handlePrevColumn}
+        disabled={visibleColumn === 0}
+      >
+        &lt;
+      </button>
+      <button
+        className="px-2 md:px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+        onClick={handleNextColumn}
+      >
+        &gt;
+      </button>
+    </div>
 
-          {/* Stops Table */}
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+    {/* Stops Table */}
+    <table className="min-w-full table-auto">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">
+            Stop Name
+          </th>
+          <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">
+            Time
+          </th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+          <React.Fragment key={index}>
+            {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
+              <tr key={stopIndex}>
+                <td className="px-4 py-2 md:px-6 md:py-4 text-xs md:text-sm text-gray-700">
+                  {stop.address}
+                </td>
+                <td className="px-4 py-2 md:px-6 md:py-4 text-xs md:text-sm text-gray-700">
+                  {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
-                <React.Fragment key={index}>
-                  {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
-                    <tr key={stopIndex}>
-                      <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </React.Fragment>
+        ))}
+      </tbody>
+    </table>
 
-          <button
-            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
-            onClick={goBack}
-          >
+    <button
+      className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+      onClick={goBack}
+    >
                 Back to Services
               </button>
             </div>
