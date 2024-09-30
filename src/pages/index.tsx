@@ -135,7 +135,10 @@ const CombinedPage: React.FC = () => {
 
       <div className="relative z-10 flex flex-col justify-center items-center h-full">
         <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-4xl w-full">
-          <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
+        {currentPage !== 4 && (
+  <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
+)}
+
 
           {loading ? (
             <p>Loading regions...</p>
@@ -220,56 +223,58 @@ const CombinedPage: React.FC = () => {
             </div>
           )}
 
-          {/* Stops display */}
-          {currentPage === 4 && selectedService && (
-            <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg mt-8">
-              <h2 className="text-3xl font-semibold mb-6 text-center">
-                Stops for {selectedService.code}
-              </h2>
+           {/* Stops display container moved upwards */}
+      {currentPage === 4 && selectedService && (
+        
+        <div className="w-1/4 h-3/4 bg-white p-6 rounded-lg shadow-lg absolute top-20 left-10">
+          <h2 className="text-3xl font-semibold mb-6 text-center">
+            Stops for {selectedService.code}
+          </h2>
 
-              <div className="flex justify-between items-center mb-4">
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-                  onClick={handlePrevColumn}
-                  disabled={visibleColumn === 0}
-                >
-                  &lt;
-                </button>
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
-                  onClick={handleNextColumn}
-                >
-                  &gt;
-                </button>
-              </div>
+          <div className="flex justify-between items-center mb-4">
+            <button
+              className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+              onClick={handlePrevColumn}
+              disabled={visibleColumn === 0}
+            >
+              &lt;
+            </button>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-lg"
+              onClick={handleNextColumn}
+            >
+              &gt;
+            </button>
+          </div>
 
-              {/* Stops Table */}
-              <table className="min-w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
-                    <React.Fragment key={index}>
-                      {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
-                        <tr key={stopIndex}>
-                          <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-                          <td className="px-6 py-4 text-sm text-gray-700">
-                            {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
-                          </td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
+          {/* Stops Table */}
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+                <React.Fragment key={index}>
+                  {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
+                    <tr key={stopIndex}>
+                      <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
+                      </td>
+                    </tr>
                   ))}
-                </tbody>
-              </table>
-              <button
-                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
-                onClick={goBack}
-              >
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+
+          <button
+            className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+            onClick={goBack}
+          >
                 Back to Services
               </button>
             </div>
