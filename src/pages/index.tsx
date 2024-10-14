@@ -134,11 +134,11 @@ const CombinedPage: React.FC = () => {
       />
 
       <div className="relative z-10 flex flex-col justify-center items-center h-full">
-      <div className={`p-6 rounded-lg shadow-lg max-w-4xl w-full ${currentPage === 4 ? '' : 'bg-white bg-opacity-90'}`}>
+      <div className={`p-6 rounded-lg  max-w-4xl w-full ${currentPage === 4 ? '' : 'bg-white bg-opacity-90'}`}>
         {currentPage !== 4 && (
           
-  <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
-)}
+        <h1 className="text-4xl font-bold text-blue-700 mb-6 text-center">Bus Timetable</h1>
+          )}
           {loading ? (
             <p>Loading regions...</p>
           ) : currentPage === 1 ? (
