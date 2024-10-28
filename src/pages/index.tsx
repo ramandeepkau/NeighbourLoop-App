@@ -5,6 +5,48 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiemFjYm1yMjIiLCJhIjoiY2x5ZHRtZDJqMDVsNDJrb3VmZWZoMG9yciJ9.Vid6j50Ey1xMLT6n6g6AgQ';
 
+
+type Day = {
+  day: string;
+};
+
+type Trip = {
+  service_version: number;
+  start_time: string;
+  days: Day[];
+};
+
+type Stop = {
+  stop_id: number;
+  order: number;
+  increment: number;
+  address: string;
+  lat: number;
+  long: number;
+};
+
+type ServiceVersion = {
+  version: number;
+  stops: Stop[];
+};
+
+type Service = {
+  code: string;
+  direction: string;
+  trips: Trip[];
+  service_versions: ServiceVersion[];
+};
+
+type Route = {
+  route_id: number;
+  title: string;
+  is_school_run: boolean;
+  locations: string;
+  services: Service[];
+};
+
+
+
 const CombinedPage: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<any | null>(null);
@@ -92,15 +134,15 @@ const CombinedPage: React.FC = () => {
     }
   };
 
-  const getCurrentDayTrips = (service: any) => {
+  const getCurrentDayTrips = (service: Service): Trip[] => {
     const today = new Date().toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
-    return service.trips.filter((trip: any) =>
-      trip.days.some((day: any) => day.day === today)
+    return service.trips.filter((trip: Trip) =>
+      trip.days.some((day: Day) => day.day === today)
     );
   };
 
-  const getStopsForCurrentServiceVersion = (service: any, serviceVersion: number) => {
-    const versionData = service.service_versions.find((version: any) => version.version === serviceVersion);
+  const getStopsForCurrentServiceVersion = (service: Service, serviceVersion: number): Stop[] => {
+    const versionData = service.service_versions.find((version) => version.version === serviceVersion);
     return versionData ? versionData.stops : [];
   };
 
@@ -114,17 +156,14 @@ const CombinedPage: React.FC = () => {
     }
   };
 
-  // Fixing the time increment feature
-  const calculateStopTime = (startTime: string, increment: number) => {
+  const calculateStopTime = (startTime: string, increment: number): string => {
     const [hours, minutes] = startTime.split(':').map(Number);
-    const tripStartTime = new Date();
-    tripStartTime.setHours(hours);
-    tripStartTime.setMinutes(minutes);
-
-    const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
+    const stopTime = new Date();
+    stopTime.setHours(hours);
+    stopTime.setMinutes(minutes + increment);
     return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
-
+  
   return (
     <div className="relative h-screen w-screen">
       {/* Map background */}
@@ -256,15 +295,17 @@ const CombinedPage: React.FC = () => {
     </tr>
   </thead>
   <tbody className="bg-white divide-y divide-gray-200">
-    {getStopsForCurrentServiceVersion(selectedService, 1).map((stop: any, stopIndex: number) => (
-      <tr key={stopIndex}>
-        <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-        <td className="px-6 py-4 text-sm text-gray-700">
-          {calculateStopTime(getCurrentDayTrips(selectedService)[0]?.start_time, stop.increment)}
-        </td>
-      </tr>
-    ))}
-  </tbody>
+  {getStopsForCurrentServiceVersion(selectedService, 1).map((stop: any, stopIndex: number) => (
+    <tr key={stopIndex}>
+      <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+      <td className="px-6 py-4 text-sm text-gray-700">
+        {calculateStopTime(getCurrentDayTrips(selectedService)[0]?.start_time, stop.increment)}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
 </table>
 
 
