@@ -248,7 +248,7 @@ const CombinedPage: React.FC = () => {
     </div>
 
     {/* Stops Table */}
-    <table className="min-w-full table-auto">
+<table className="min-w-full table-auto">
   <thead className="bg-gray-50">
     <tr>
       <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
@@ -266,6 +266,7 @@ const CombinedPage: React.FC = () => {
     ))}
   </tbody>
 </table>
+
 
     <button
       className="mm-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
