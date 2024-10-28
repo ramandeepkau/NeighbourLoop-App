@@ -249,33 +249,23 @@ const CombinedPage: React.FC = () => {
 
     {/* Stops Table */}
     <table className="min-w-full table-auto">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">
-            Stop Name
-          </th>
-          <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-700">
-            Time
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
-          <React.Fragment key={index}>
-            {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
-              <tr key={stopIndex}>
-                <td className="px-4 py-2 md:px-6 md:py-4 text-xs md:text-sm text-gray-700">
-                  {stop.address}
-                </td>
-                <td className="px-4 py-2 md:px-6 md:py-4 text-xs md:text-sm text-gray-700">
-                  {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
-                </td>
-              </tr>
-            ))}
-          </React.Fragment>
-        ))}
-      </tbody>
-    </table>
+  <thead className="bg-gray-50">
+    <tr>
+      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Stop Name</th>
+      <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+    </tr>
+  </thead>
+  <tbody className="bg-white divide-y divide-gray-200">
+    {getStopsForCurrentServiceVersion(selectedService, 1).map((stop: any, stopIndex: number) => (
+      <tr key={stopIndex}>
+        <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+        <td className="px-6 py-4 text-sm text-gray-700">
+          {calculateStopTime(getCurrentDayTrips(selectedService)[0]?.start_time, stop.increment)}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
     <button
       className="mm-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
