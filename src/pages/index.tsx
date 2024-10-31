@@ -155,12 +155,14 @@ const CombinedPage: React.FC = () => {
       setVisibleColumn((prevColumn) => prevColumn - 1);
     }
   };
-
+ // Fixing the time increment feature
   const calculateStopTime = (startTime: string, increment: number): string => {
     const [hours, minutes] = startTime.split(':').map(Number);
-    const stopTime = new Date();
-    stopTime.setHours(hours);
-    stopTime.setMinutes(minutes + increment);
+    const tripStartTime = new Date();
+    tripStartTime.setHours(hours);
+    tripStartTime.setMinutes(minutes);
+
+    const stopTime = new Date(tripStartTime.getTime() + increment * 60000);
     return stopTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
   
@@ -295,25 +297,24 @@ const CombinedPage: React.FC = () => {
     </tr>
   </thead>
   <tbody className="bg-white divide-y divide-gray-200">
-  {getStopsForCurrentServiceVersion(selectedService, 1).map((stop: any, stopIndex: number) => (
-    <tr key={stopIndex}>
-      <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
-      <td className="px-6 py-4 text-sm text-gray-700">
-        {calculateStopTime(getCurrentDayTrips(selectedService)[0]?.start_time, stop.increment)}
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-
-</table>
-
-
-    <button
-      className="mm-2 p-4 font-bold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-      onClick={goBack}
-      style={{ backgroundColor: 'lightgrey', color: 'black' }}
-    >
+  {getCurrentDayTrips(selectedService).map((trip: any, index: number) => (
+                    <React.Fragment key={index}>
+                      {getStopsForCurrentServiceVersion(selectedService, trip.service_version).map((stop: any, stopIndex: number) => (
+                        <tr key={stopIndex}>
+                          <td className="px-6 py-4 text-sm text-gray-700">{stop.address}</td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {calculateStopTime(trip.start_time, stop.increment + visibleColumn * 30)}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+              <button
+                className="mt-6 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-lg shadow-lg"
+                onClick={goBack}
+              >
                 Back to Services
               </button>
             </div>
