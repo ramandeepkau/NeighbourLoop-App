@@ -8,8 +8,8 @@ export default function BookPage() {
 
   const [formData, setFormData] = useState({
     name: '',
-    phone: '',
     email: '',
+    phone: '',
     address: '',
     preferredDate: '',
   });
@@ -18,7 +18,7 @@ export default function BookPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const booking = {
@@ -28,34 +28,36 @@ export default function BookPage() {
       timestamp: new Date().toISOString(),
     };
 
-    // Store booking in localStorage
-    const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
-    localStorage.setItem('bookings', JSON.stringify([...existing, booking]));
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      address: formData.address,
+      preferredDate: formData.preferredDate,
+      service,
+      area,
+    };
 
-    // Send email via EmailJS
-    emailjs
-      .send(
-        'sservice_9f0f2pq', // ✅ your service ID
-        'template_bdzgbmf', // ✅ your template ID
-        {
-          name: formData.name,
-          service,
-          area,
-          phone: formData.phone,
-          address: formData.address,
-          preferredDate: formData.preferredDate,
-          email: formData.email, // only used if EmailJS template is configured to send TO this
-        },
-        'UtncHxjSXKdN1xxWJ' // ✅ your public key
-      )
-      .then((res) => {
-        console.log('✅ Email sent:', res.text);
-        router.push('/success');
-      })
-      .catch((err) => {
-        console.error('❌ Email error:', err);
-        alert('Failed to send email. Please try again.');
-      });
+    try {
+      const result = await emailjs.send(
+      'service_9f0f2pq',
+      'template_bdzgbmf',
+     
+        templateParams,
+        'UtncHxjSXKdN1xxWJ'
+      );
+
+      console.log('✅ Email sent:', result.text);
+
+      // Save booking only if email is successful
+      const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
+      localStorage.setItem('bookings', JSON.stringify([...existing, booking]));
+
+      router.push('/success');
+    } catch (error) {
+      console.error('❌ EmailJS Error:', error);
+      alert('Failed to send email. Please try again.');
+    }
   };
 
   return (
@@ -86,7 +88,7 @@ export default function BookPage() {
           <input
             name="phone"
             type="tel"
-            placeholder="Your Phone Number"
+            placeholder="Your Phone"
             value={formData.phone}
             onChange={handleChange}
             required
