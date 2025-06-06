@@ -1,6 +1,16 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 
 export default function HomePage() {
+  const router = useRouter();
+
+  const handleCitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected) {
+      router.push(`/services?area=${encodeURIComponent(selected.toLowerCase())}`);
+    }
+  };
+
   return (
     <div className="h-screen w-screen flex flex-col bg-white text-gray-900">
       {/* Top Bar */}
@@ -27,12 +37,15 @@ export default function HomePage() {
         {/* Right Side with Black Background */}
         <div className="w-full md:w-1/2 bg-black flex flex-col items-center justify-center text-white p-8">
           <h1 className="text-3xl font-semibold mb-6 text-center">Where do you need a service?</h1>
-          <select className="w-full max-w-sm p-3 rounded text-black">
+          <select
+            className="w-full max-w-sm p-3 rounded text-black"
+            onChange={handleCitySelect}
+          >
             <option value="">Select your city</option>
-            <option value="toronto">Terrace</option>
-            <option value="vancouver">kitimat</option>
-            <option value="calgary">Prince George</option>
-            <option value="ottawa">Prince Rupart</option>
+            <option value="Terrace">Terrace</option>
+            <option value="Kitimat">Kitimat</option>
+            <option value="Prince George">Prince George</option>
+            <option value="Prince Rupart">Prince Rupart</option>
           </select>
         </div>
       </div>
