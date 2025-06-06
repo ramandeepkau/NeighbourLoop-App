@@ -10,6 +10,7 @@ export default function BookPage() {
     name: '',
     date: '',
     time: '',
+    email: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,19 +31,19 @@ export default function BookPage() {
     localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
 
     // ✅ Send confirmation email using EmailJS
-    emailjs
-      .send(
-        'service_ozyyxid', // ✅ Your EmailJS Service ID
-        'template_m4rjzj9', // ✅ Your EmailJS Template ID
-        {
-          name: formData.name,
-          service,
-          area,
-          date: formData.date,
-          time: formData.time,
-        },
-        'KQjsLNF2KZjtbIDzB' // ✅ Your EmailJS Public Key
-      )
+   emailjs.send(
+  'service_ozyyxid',      // ✅ Your actual Service ID
+  'template_m4rjzj9',     // ✅ Your actual Template ID
+  {
+    name: formData.name,
+    email: formData.email,      // ✅ This sends the user's email
+    service,
+    area,
+    date: formData.date,
+    time: formData.time,
+  },
+  'KQjsLNF2KZjtbIDzB'     // ✅ Your Public Key
+)
       .then(() => {
         router.push('/success');
       })
@@ -76,6 +77,16 @@ export default function BookPage() {
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
+          <input
+  name="email"
+  type="email"
+  placeholder="Your Email"
+  value={formData.email}
+  onChange={handleChange}
+  required
+  className="w-full p-2 border border-gray-300 rounded"
+/>
+
           <input
             name="time"
             type="time"
