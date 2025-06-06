@@ -8,9 +8,10 @@ export default function BookPage() {
 
   const [formData, setFormData] = useState({
     name: '',
-    date: '',
-    time: '',
+    phone: '',
     email: '',
+    address: '',
+    preferredDate: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,29 +28,33 @@ export default function BookPage() {
       timestamp: new Date().toISOString(),
     };
 
-    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
+    // Store booking in localStorage
+    const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
+    localStorage.setItem('bookings', JSON.stringify([...existing, booking]));
 
-    // ✅ Send confirmation email using EmailJS
-   emailjs.send(
-  'service_ozyyxid',      // ✅ Your actual Service ID
-  'template_m4rjzj9',     // ✅ Your actual Template ID
-  {
-    name: formData.name,
-    email: formData.email,      // ✅ This sends the user's email
-    service,
-    area,
-    date: formData.date,
-    time: formData.time,
-  },
-  'KQjsLNF2KZjtbIDzB'     // ✅ Your Public Key
-)
-      .then(() => {
+    // Send email via EmailJS
+    emailjs
+      .send(
+        'sservice_9f0f2pq', // ✅ your service ID
+        'template_bdzgbmf', // ✅ your template ID
+        {
+          name: formData.name,
+          service,
+          area,
+          phone: formData.phone,
+          address: formData.address,
+          preferredDate: formData.preferredDate,
+          email: formData.email, // only used if EmailJS template is configured to send TO this
+        },
+        'UtncHxjSXKdN1xxWJ' // ✅ your public key
+      )
+      .then((res) => {
+        console.log('✅ Email sent:', res.text);
         router.push('/success');
       })
-      .catch((error) => {
-        console.error('EmailJS Error:', error);
-        router.push('/success'); // Still go to success screen
+      .catch((err) => {
+        console.error('❌ Email error:', err);
+        alert('Failed to send email. Please try again.');
       });
   };
 
@@ -70,27 +75,36 @@ export default function BookPage() {
             className="w-full p-2 border border-gray-300 rounded"
           />
           <input
-            name="date"
-            type="date"
-            value={formData.date}
+            name="email"
+            type="email"
+            placeholder="Your Email"
+            value={formData.email}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
           <input
-  name="email"
-  type="email"
-  placeholder="Your Email"
-  value={formData.email}
-  onChange={handleChange}
-  required
-  className="w-full p-2 border border-gray-300 rounded"
-/>
-
+            name="phone"
+            type="tel"
+            placeholder="Your Phone Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
           <input
-            name="time"
-            type="time"
-            value={formData.time}
+            name="address"
+            type="text"
+            placeholder="Your Address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <input
+            name="preferredDate"
+            type="date"
+            value={formData.preferredDate}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
