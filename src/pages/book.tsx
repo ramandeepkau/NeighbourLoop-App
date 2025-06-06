@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 
-
 export default function BookPage() {
   const router = useRouter();
   const { service, area } = router.query;
@@ -18,22 +17,40 @@ export default function BookPage() {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const booking = {
-    service,
-    area,
-    ...formData,
-    timestamp: new Date().toISOString(),
+    const booking = {
+      service,
+      area,
+      ...formData,
+      timestamp: new Date().toISOString(),
+    };
+
+    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
+
+    // ✅ Send confirmation email using EmailJS
+    emailjs
+      .send(
+        'service_ozyyxid', // ✅ Your EmailJS Service ID
+        'template_m4rjzj9', // ✅ Your EmailJS Template ID
+        {
+          name: formData.name,
+          service,
+          area,
+          date: formData.date,
+          time: formData.time,
+        },
+        'KQjsLNF2KZjtbIDzB' // ✅ Your EmailJS Public Key
+      )
+      .then(() => {
+        router.push('/success');
+      })
+      .catch((error) => {
+        console.error('EmailJS Error:', error);
+        router.push('/success'); // Still go to success screen
+      });
   };
-
-  const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-  localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
-
-  alert(`Booking confirmed for ${service} in ${area}!`);
-  router.push('/success'); // We’ll create this page in the next step
-};
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
