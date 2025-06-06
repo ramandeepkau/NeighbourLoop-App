@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
+
 
 export default function BookPage() {
   const router = useRouter();
@@ -16,10 +18,22 @@ export default function BookPage() {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Booking confirmed for ${service} in ${area}`);
-    // In real app: send formData to backend here
+  e.preventDefault();
+
+  const booking = {
+    service,
+    area,
+    ...formData,
+    timestamp: new Date().toISOString(),
   };
+
+  const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+  localStorage.setItem('bookings', JSON.stringify([...existingBookings, booking]));
+
+  alert(`Booking confirmed for ${service} in ${area}!`);
+  router.push('/success'); // We’ll create this page in the next step
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
