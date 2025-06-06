@@ -7,7 +7,7 @@ export default function HomePage() {
   const handleCitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
     if (selected) {
-      router.push(`/services?area=${encodeURIComponent(selected.toLowerCase())}`);
+      router.push(`/services?area=${encodeURIComponent(selected)}`);
     }
   };
 
