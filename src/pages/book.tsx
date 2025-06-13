@@ -1,17 +1,10 @@
 import { useRouter } from 'next/router';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 
 export default function BookPage() {
   const router = useRouter();
   const { service, area } = router.query;
-
-  // ✅ Fix CORS by initializing EmailJS in the browser
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      emailjs.init('UtncHxjSXKdN1xxWJ');
-    }
-  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -55,6 +48,7 @@ export default function BookPage() {
 
       console.log('✅ Email sent:', result.text);
 
+      // Save booking only if email is successful
       const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
       localStorage.setItem('bookings', JSON.stringify([...existing, booking]));
 
