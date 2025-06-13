@@ -1,54 +1,32 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 
 export default function BookPage() {
   const router = useRouter();
   const { service, area } = router.query;
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    preferredDate: '',
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    emailjs.init('UtncHxjSXKdN1xxWJ'); // Replace with your actual Public Key
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const booking = {
-      service,
-      area,
-      ...formData,
-      timestamp: new Date().toISOString(),
-    };
-
-    const templateParams = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      address: formData.address,
-      preferredDate: formData.preferredDate,
-      service,
-      area,
-    };
-
     try {
-      const result = await emailjs.send(
-        'service_9f0f2pq',
-        'template_bdzgbmf',
-        templateParams,
-        'UtncHxjSXKdN1xxWJ'
+      const result = await emailjs.sendForm(
+        'service_9f0f2pq',          // Your EmailJS Service ID
+        'template_bdzgbmf',        // Your EmailJS Template ID
+        formRef.current!,          // The form reference
+        'UtncHxjSXKdN1xxWJ'        // Your EmailJS Public Key
       );
 
       console.log('✅ Email sent:', result.text);
 
-      // Save booking only if email is successful
+      const formData = new FormData(formRef.current!);
+      const booking = Object.fromEntries(formData.entries());
+
       const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
       localStorage.setItem('bookings', JSON.stringify([...existing, booking]));
 
@@ -65,13 +43,13 @@ export default function BookPage() {
         <h1 className="text-2xl font-bold text-blue-700 mb-4">
           Book {service} in {area}
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+          <input type="hidden" name="service" value={service as string} />
+          <input type="hidden" name="area" value={area as string} />
           <input
             name="name"
             type="text"
             placeholder="Your Name"
-            value={formData.name}
-            onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
@@ -79,8 +57,6 @@ export default function BookPage() {
             name="email"
             type="email"
             placeholder="Your Email"
-            value={formData.email}
-            onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
@@ -88,8 +64,6 @@ export default function BookPage() {
             name="phone"
             type="tel"
             placeholder="Your Phone"
-            value={formData.phone}
-            onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
@@ -97,16 +71,12 @@ export default function BookPage() {
             name="address"
             type="text"
             placeholder="Your Address"
-            value={formData.address}
-            onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
           <input
             name="preferredDate"
             type="date"
-            value={formData.preferredDate}
-            onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded"
           />
